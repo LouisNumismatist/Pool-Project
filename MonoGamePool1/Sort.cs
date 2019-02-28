@@ -47,6 +47,7 @@ namespace MonoGamePool1
             }
             return nums;
         }
+
         static Tuple<IEnumerable<int>, IEnumerable<int>> SplitArray(IEnumerable<int> arr)
         {
             var nums = arr.ToArray();
@@ -66,6 +67,7 @@ namespace MonoGamePool1
             }
             return new Tuple<IEnumerable<int>, IEnumerable<int>>(halfA, halfB);
         }
+
         static int Len(Array array)
         {
             int length = 0;

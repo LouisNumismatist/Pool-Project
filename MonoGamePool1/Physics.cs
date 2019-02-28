@@ -22,37 +22,64 @@ namespace MonoGamePool1
         public const float ball_mass_moment_of_inertia = 0.4f; //2/5 mR^2
         public const float spin_deceleration_rate_cloth = 15f; //5-15 rad/sec^2
 
+        public const float g = 9.81f;
 
-        public static double Pythagoras1(double a, double b)
+        public static double Pythagoras1(double opp, double adj) //Finding hyp
         {
-            return Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
+            return Math.Sqrt(Math.Pow(opp, 2) + Math.Pow(adj, 2));
         }
-        public static double Pythagoras2(double a, double b)
+
+        public static double Pythagoras2(double hyp, double adj) //Finding opp or adj
         {
-            return Math.Sqrt(Math.Pow(a, 2) - Math.Pow(b, 2));
+            return Math.Sqrt(Math.Pow(hyp, 2) - Math.Pow(adj, 2));
         }
+
         public static float Gradient(Vector2 a, Vector2 b)
         {
             return ((b.Y - a.Y) / (b.X - a.X));
         }
+
         public static float YIntercept(Vector2 a, float Gradient)
         {
             return (a.Y - (a.X * Gradient));
         }
+
         public static float LineEquation(float x, float m, float c)
         {
             return (m * x + c);
         }
+
         public static float FindX(float y, float m, float c)
         {
             return ((y - c) / m);
         }
-        //static double SUVAT()
+
+        /*public static double SUVATSelect(string miss, string find, float aa, float bb, float cc)
+        {
+            float s;
+            float u;
+            float v;
+            float a;
+            float t;
+
+            if (find == "s")
+            {
+                if (miss == "u")
+                {
+                    v = aa;
+                    a = bb;
+                    t = cc;
+                    return (v * t - 0.5 * a * Math.Pow(t, 2));
+                }
+            }
+        }*/
+
         public static double Impulse()
         {
             return 0;
             //return Impulse;
         }
+
         public static bool CircleLine(Ball Circle, Vector2 LinePos)
         {
             if (Vector2.Distance(Circle.Center, LinePos) <= Circle.Radius)
@@ -64,6 +91,7 @@ namespace MonoGamePool1
                 return false;
             }
         }
+
         public static int CountTotal(int i)
         {
             int total = 0;
@@ -78,10 +106,12 @@ namespace MonoGamePool1
         {
             return Math.Asin((double)Gradient(hyp, opp));
         }
+
         public static double CosAngle(Vector2 hyp, Vector2 adj)
         {
             return Math.Acos((double)Gradient(adj, hyp));
         }
+
         public static double TanAngle(Vector2 adj, Vector2 opp)
         {
             return Math.Atan((double)Gradient(opp, adj));
@@ -91,14 +121,18 @@ namespace MonoGamePool1
         {
             return F * Coefficient;
         }
-        public static double NewtonAcceleration(float m, float a)
+
+        public static double NewtonAcc(Ball ball)
         {
-            return m * a;
+            Console.WriteLine((ball.Weight).ToString() + " " + (ball.Acceleration.X).ToString() + " " + (ball.Acceleration.Y).ToString());
+            return (ball.Weight/g) * Pythagoras1(ball.Acceleration.X, ball.Acceleration.Y);
         }
+
         public static double Acceleration(float v1, float v2, float t)
         {
             return (v2 - v1) / t;
         }
+
         public static double RestitutionVelocity(float u, float coefficient)
         {
             return u * coefficient;

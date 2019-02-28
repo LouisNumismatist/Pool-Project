@@ -6,40 +6,48 @@ using System.Threading.Tasks;
 
 namespace MonoGamePool1
 {
-    public struct Stack
+    /// <summary>
+    /// My own implementation of a stack data structure, mainly used for textboxes, 
+    /// however as a generic type has been used it could be used for other variable types than strings
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class Stack<T>
     {
-        public int Pointer;
-        public List<object> Contents;
+        private int Pointer;
+        private readonly List<T> Contents;
 
-        public Stack(int pointer, List<object> contents)
+        public Stack(int pointer, List<T> contents)
         {
             Pointer = pointer;
             Contents = contents;
         }
-        public static int GetLength(Stack self)
+
+        public int GetLength()
         {
-            return self.Pointer;
+            return Pointer;
         }
-        public static Stack Push(Stack self, object a)
+
+        public void Push(T a)
         {
-            self.Pointer++;
-            self.Contents[self.Pointer] = a;
-            return self;
+            Pointer++;
+            Contents[Pointer] = a;
         }
-        static Tuple<Stack, object> Pop(Stack self)
+
+        public T Pop()
         {
-            object a = Peek(self);
-            self.Pointer--;
-            return new Tuple<Stack, object>(self, a);
+            T a = Peek();
+            Pointer--;
+            return a;
         }
-        public static Stack Clear(Stack self)
+
+        public void Clear()
         {
-            self.Pointer -= GetLength(self);
-            return self;
+            Pointer -= GetLength();
         }
-        static bool IsEmpty(Stack self)
+
+        public bool IsEmpty()
         {
-            if (self.Pointer == 0)
+            if (Pointer == 0)
             {
                 return true;
             }
@@ -48,60 +56,30 @@ namespace MonoGamePool1
                 return false;
             }
         }
-        public static object Peek(Stack self)
-        {
-            return self.Contents[self.Pointer];
-        }
-    }
-    public struct Queue
-    {
-        public int Head;
-        public int Tail;
-        public object[] Contents;
 
-        public Queue(int head, int tail, object[] contents)
+        public T Peek()
         {
-            Head = head;
-            Tail = tail;
-            Contents = contents;
+            return Contents[Pointer];
         }
 
-        public static int GetLength(Queue self)
+        public List<T> GetContents()
         {
-            return self.Tail-self.Head;
+            return Contents;
         }
-        public static Queue Push(Queue self, Ball ball)
+        
+        public int GetPointer()
         {
-            self.Tail++;
-            self.Contents[self.Tail] = ball;
-            return self;
+            return Pointer;
+
         }
-        public static Tuple<Queue, object> Pop(Queue self)
+
+        /*public void Insert(T item) //NEED TO REMOVE
         {
-            object a = Peek(self);
-            self.Head++;
-            return new Tuple<Queue, object>(self, a);
-        }
-        public static Queue Clear(Queue self)
-        {
-            self.Head = 0;
-            self.Tail = 0;
-            return self;
-        }
-        public static bool IsEmpty(Queue self)
-        {
-            if (self.Head == self.Tail)
+            for (int x = Contents.Count() - 1; x > Pointer; x--)
             {
-                return true;
+                Contents[x] = Contents[x - 1];
             }
-            else
-            {
-                return false;
-            }
-        }
-        public static object Peek(Queue self)
-        {
-            return self.Contents[self.Head];
-        }
+            Push(item);
+        }*/
     }
 }

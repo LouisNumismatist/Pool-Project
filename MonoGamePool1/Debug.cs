@@ -13,7 +13,7 @@ namespace MonoGamePool1
         public static bool canPingBall = true;
         public static bool visualCoords = false;
         public static bool sightStatus = true;
-        public static string color = "green";
+        //public static string color = "green";
         public static float speed = 11.75f; //11.75
         public static int rows = 5;
         public static int ballBorderWidth = 2;
@@ -27,7 +27,7 @@ namespace MonoGamePool1
                 Vector2 size = Game1.font.MeasureString(text);
                 Color color;
 
-                if (a.ID == 15 || a.Color.Equals(Game1.YellowBall))
+                if (a.ID == 15 || a.Colour == Color.Yellow)
                 {
                     color = Color.Black;
                 }
@@ -38,6 +38,7 @@ namespace MonoGamePool1
                 spriteBatch.DrawString(Game1.font, text, a.Center, color, 0f, size * 0.5f, 1f, SpriteEffects.None, 0f);
             }
         }
+
         public static Ball PingBall(Ball a)
         {
             if (canPingBall)
@@ -71,6 +72,7 @@ namespace MonoGamePool1
             }
             return a;
         }
+
         public static void ShowCoords(SpriteBatch spriteBatch)
         {
             if (visualCoords)
@@ -79,7 +81,8 @@ namespace MonoGamePool1
                 spriteBatch.DrawString(Game1.font, text, new Vector2(Input.mousePosition.X + 15, Input.mousePosition.Y + 10), Color.Black, 0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
             }
         }
-        public static Tuple<Color, string> ChangeTextures()
+
+        /*public static Tuple<Color, string> ChangeTextures()
         {
             if (color == "green" || color == "mario")
             {
@@ -93,8 +96,9 @@ namespace MonoGamePool1
             {
                 return new Tuple<Color, string>(Color.DimGray, "KERMIE_Saturated_Gradient");
             }
-        }
-        public static bool BlackEight()
+        }*/
+
+        /*public static bool BlackEight()
         {
             if (color == "green" || color == "blue")
             {
@@ -104,6 +108,6 @@ namespace MonoGamePool1
             {
                 return false;
             }
-        }
+        }*/
     }
 }

@@ -14,65 +14,59 @@ namespace MonoGamePool1
 {
     public class Graphics
     {
-        static int BorderWidth = Game1.BorderWidth;
-        static int ScreenHeight = Game1.ScreenHeight;
-        static int ScreenWidth = Game1.ScreenWidth;
-        static int BallDiam = Game1.BallDiam;
+        static readonly int BorderWidth = Game1.BorderWidth;
+        static readonly int ScreenHeight = Game1.ScreenHeight;
+        static readonly int ScreenWidth = Game1.ScreenWidth;
+        static readonly int BallDiam = Game1.BallDiam;
 
-        public static void DrawBoard(SpriteBatch spriteBatch, Texture2D TableInner, Texture2D TableOuter)
+        //static readonly int LetterHeight = 20;
+        //static readonly int LetterWidth = 11;
+
+        public static Texture2D BlankBox = Game1.BlankBox;
+        public static Texture2D BlankCircle = Game1.BlankCircle;
+
+        /*public static void Draw(Texture2D texture)
+        {
+
+        }*/
+
+        public static void DrawBoard(SpriteBatch spriteBatch)
         {
             int BoxWidth = ScreenWidth - 2 * BorderWidth;
             int BoxHeight = ScreenHeight - 2 * BorderWidth;
             int ThinBorder = 4;
             //Outer and Inner Borders
-            spriteBatch.Draw(TableOuter, new Rectangle(BorderWidth - ThinBorder, BorderWidth - ThinBorder, BoxWidth + 2 * ThinBorder, BoxHeight + 2 * ThinBorder), Color.LightGray);
-            spriteBatch.Draw(TableInner, new Rectangle(BorderWidth, BorderWidth, ScreenWidth - 2 * BorderWidth, ScreenHeight - 2 * BorderWidth), Color.White);
+            spriteBatch.Draw(BlankBox, new Rectangle(BorderWidth - ThinBorder, BorderWidth - ThinBorder, BoxWidth + 2 * ThinBorder, BoxHeight + 2 * ThinBorder), Color.LightGray);
+            spriteBatch.Draw(BlankBox, new Rectangle(BorderWidth, BorderWidth, ScreenWidth - 2 * BorderWidth, ScreenHeight - 2 * BorderWidth), Color.ForestGreen);
         }
-        public static void DrawBalls(SpriteBatch spriteBatch, List<Ball> BallsList, Texture2D EightBall)
+
+        public static void DrawBalls(SpriteBatch spriteBatch, List<Ball> BallsList)
         {
             foreach (Ball a in BallsList)
             {
-                float radius = a.Radius;
-                int diameter = (int)(2 * radius);
-                int x = (int)(a.Center.X - radius);
-                int y = (int)(a.Center.Y - radius);
-                if (a.Color == EightBall && Debug.BlackEight())
-                {
-                    spriteBatch.Draw(a.Color, new Rectangle(x, y, diameter, diameter), Color.Black);
-                    //Draws the Eight Ball with a black border (avoids excess white pixels)
-                }
-                else if (a.ID == 15)
+                if (a.ID == 15)
                 {
                     if (Game1.HittingCueBall && Debug.canPingBall)
                     {
-                        spriteBatch.Draw(a.Color, new Rectangle(x - Debug.ballBorderWidth, y - Debug.ballBorderWidth, diameter + 2 * Debug.ballBorderWidth, diameter + 2* Debug.ballBorderWidth), Color.Red);
+                        new Pocket(0, a.Center, a.Radius + Debug.ballBorderWidth, Color.Red).Draw(spriteBatch);
                         //Draws red ball behind ball when held
                     }
-                    spriteBatch.Draw(a.Color, new Rectangle(x, y, diameter, diameter), Color.White);
-                    //Overlaps red ball with cue ball to draw cue ball with red border
-
                 }
-                else
-                {
-                    spriteBatch.Draw(a.Color, new Rectangle(x, y, diameter, diameter), Color.White);
-                    //Draws other balls to screen
-                }
+                a.Draw(spriteBatch);
                 Debug.NumberBalls(a, spriteBatch);
                 //Draw numbers on balls if enabled
             }
         }
-        public static void DrawPockets(SpriteBatch spriteBatch, List<Pocket> PocketList, Texture2D EightBall)
+
+        public static void DrawPockets(SpriteBatch spriteBatch, List<Pocket> PocketList)
         {
             foreach (Pocket p in PocketList)
             {
-                float radius = p.Radius;
-                int diameter = (int)(2 * radius);
-                int x = (int)(p.Center.X - radius);
-                int y = (int)(p.Center.Y - radius);
-                spriteBatch.Draw(EightBall, new Rectangle(x, y, diameter, diameter), Color.Black);
+                p.Draw(spriteBatch);
             }
         }
-        public static void DrawOuterPockets(SpriteBatch spriteBatch, Texture2D TableOuter, Texture2D CueBall)
+
+        /*public static void DrawOuterPockets(SpriteBatch spriteBatch)
         {
             int Width = 64;
             int PocketDiam = 54;
@@ -82,21 +76,24 @@ namespace MonoGamePool1
                 {
                     if (i == 1)
                     {
-                        spriteBatch.Draw(CueBall, new Rectangle((ScreenWidth - PocketDiam) / 2, j * (ScreenHeight - 2 * BorderWidth) + BorderWidth - PocketDiam / 2, PocketDiam, PocketDiam), Color.LightGray);
+                        spriteBatch.Draw(BlankCircle, new Rectangle((ScreenWidth - PocketDiam) / 2, j * (ScreenHeight - 2 * BorderWidth) + BorderWidth - PocketDiam / 2, PocketDiam, PocketDiam), Color.LightGray);
                     }
                     else
                     {
-                        spriteBatch.Draw(TableOuter, new Rectangle(i * ((ScreenWidth - Width) / 2), j * (ScreenHeight - Width), Width, Width), Color.LightGray);
+                        spriteBatch.Draw(BlankBox, new Rectangle(i * ((ScreenWidth - Width) / 2), j * (ScreenHeight - Width), Width, Width), Color.LightGray);
                     }
                 }
             }
-        }
-        public static void DrawScoreBox(SpriteBatch spriteBatch, List<Ball> Graveyard, Texture2D TableOuter, Texture2D EightBall)
+            
+        }*/
+
+        public static void DrawScoreBox(SpriteBatch spriteBatch, List<Ball> Graveyard)
         {
-            spriteBatch.Draw(TableOuter, new Rectangle(0, ScreenHeight, ScreenWidth, 100), Color.DarkGray);
-            spriteBatch.Draw(TableOuter, new Rectangle(ScreenWidth, 0, 200, ScreenHeight + 100), Color.DarkGray);
-            DrawBalls(spriteBatch, Graveyard, EightBall);
+            spriteBatch.Draw(BlankBox, new Rectangle(0, ScreenHeight, ScreenWidth, 100), Color.DarkGray);
+            spriteBatch.Draw(BlankBox, new Rectangle(ScreenWidth, 0, 200, ScreenHeight + 100), Color.DarkGray);
+            DrawBalls(spriteBatch, Graveyard);
         }
+
         /*public static void DrawPath(Ball a)
         {
             Vector2 MousePosition = Input.mousePosition;
@@ -106,11 +103,13 @@ namespace MonoGamePool1
             Rectangle Line = new Rectangle((int)a.Center.X, (int)a.Center.Y, (int)LineLen, LineWidth);
             Rectangle RotatedLine = Vector2.Transform(Line, Angle);   
         }*/
-        /**public static void DrawDiagonalLine_JOSH_VERSION(SpriteBatch sb, DiagonalLine a)
+
+        /*public static void DrawDiagonalLine_JOSH_VERSION(SpriteBatch sb, DiagonalLine a)
         {
             DrawLine(sb, a.Start, a.End, a.Thickness, Color.Brown);
-        }**/
-        public static void DrawDiagonalLine(SpriteBatch spriteBatch, DiagonalLine a, Texture2D PoolCueTexture)
+        }*/
+
+        public static void DrawDiagonalLine(SpriteBatch spriteBatch, DiagonalLine a)
         {
             float m = Physics.Gradient(a.Start, a.End);
             int count = 0;
@@ -145,13 +144,13 @@ namespace MonoGamePool1
                     int y = (int)Physics.LineEquation(x, m, c);
                     int newY = Math.Abs(y - prevY);
                     int newX = x - prevX;
-                    Tuple<int, int> prevTuple = InnerDrawDiagonalLines(spriteBatch, a, PoolCueTexture, y, x, m, c, prevY, newY, prevX, newX, count);
+                    Tuple<int, int> prevTuple = InnerDrawDiagonalLines(spriteBatch, a, y, x, m, c, prevY, newY, prevX, newX, count);
                     //Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", y, x, m, c, prevY, newY, prevX, newX);
                     prevY = prevTuple.Item1;
                     prevX = prevTuple.Item2;
                 }
             }
-            /**else if (a.Start.Y != a.End.Y)
+            /*else if (a.Start.Y != a.End.Y)
             {
                 if (a.Start.Y < a.End.Y)
                 {
@@ -163,9 +162,10 @@ namespace MonoGamePool1
                     Console.WriteLine("{0}, {1}, {2}, {3}", (int)a.End.X, (int)a.End.Y, a.Thickness, (int)a.Start.Y - (int)a.End.Y);
                     spriteBatch.Draw(PoolCueTexture, new Rectangle((int)a.End.X, (int)a.End.Y, a.Thickness, (int)a.Start.Y - (int)a.End.Y), Color.LightGray);
                 }
-            }**/
+            }*/
         }
-        public static Tuple<int, int> InnerDrawDiagonalLines(SpriteBatch spriteBatch, DiagonalLine a, Texture2D PoolCueTexture, int y, int x, float m, float c, int prevY, int newY, int prevX, int newX, int count)
+
+        public static Tuple<int, int> InnerDrawDiagonalLines(SpriteBatch spriteBatch, DiagonalLine a, int y, int x, float m, float c, int prevY, int newY, int prevX, int newX, int count)
         {
             if (!a.Dotted || x % 5 == 0)
             {
@@ -181,14 +181,14 @@ namespace MonoGamePool1
                 {
                     if (Math.Abs(Physics.TanAngle(a.Start, a.End)) < Math.PI / 4) //Far left or far right
                     {
-                        spriteBatch.Draw(PoolCueTexture, new Rectangle(x, prevY, a.Thickness, newY), Color.LightGray);
+                        spriteBatch.Draw(BlankBox, new Rectangle(x, prevY, a.Thickness, newY), a.Colour);
                         //Console.WriteLine("{0}, {1}, {2}, {3}, {4}", count, x, prevY, a.Thickness, newY);
                         //spriteBatch.Draw(PoolCueTexture, new Rectangle(100, 100, 5, 5), Color.Navy);
                     }
                     else //Top or bottom sections
                     {
-                        spriteBatch.Draw(PoolCueTexture, new Rectangle(x, prevY, a.Thickness, newY), Color.LightGray);
-                    }                    
+                        spriteBatch.Draw(BlankBox, new Rectangle(x, prevY, a.Thickness, newY), a.Colour);
+                    }
 
                 }
             }
@@ -205,7 +205,7 @@ namespace MonoGamePool1
             return new Tuple<int, int>(prevY, prevX);
         }
 
-        public static void DrawDiagonalLineBROKEN(SpriteBatch spriteBatch, DiagonalLine a, Texture2D PoolCueTexture)
+        /*public static void DrawDiagonalLineBROKEN(SpriteBatch spriteBatch, DiagonalLine a)
         {
             float m = Physics.Gradient(a.Start, a.End);
             float c = Physics.YIntercept(a.Start, m);
@@ -227,68 +227,120 @@ namespace MonoGamePool1
             for (int i = point1; i < point2; i++)
             {
                 int y = (int)Physics.LineEquation(i, m, c);
-                spriteBatch.Draw(PoolCueTexture, new Rectangle(i, y, 1, 1), Color.White);
+                spriteBatch.Draw(BlankBox, new Rectangle(i, y, 1, 1), Color.White);
             }
-        }
+        }*/
 
-        public static void DrawCushionDiagonals(SpriteBatch spriteBatch, List<DiagonalLine> DiagonalLines, Texture2D TableOuter)
+        public static void DrawCushionDiagonals(SpriteBatch spriteBatch, List<DiagonalLine> DiagonalLines)
         {
             foreach (DiagonalLine a in DiagonalLines)
             {
                 Console.WriteLine("a, {0}, {1}", a.Start, a.End);
-                DrawDiagonalLine(spriteBatch, a, TableOuter);
+                DrawDiagonalLine(spriteBatch, a);
             }
         }
-        public static void DrawPoolCue(SpriteBatch spriteBatch, DiagonalLine PoolCue, Texture2D PoolCueTexture)
+
+        public static void DrawPoolCue(SpriteBatch spriteBatch, DiagonalLine PoolCue)
         {
-            DrawDiagonalLine(spriteBatch, PoolCue, PoolCueTexture);
+            DrawDiagonalLine(spriteBatch, PoolCue);
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, PoolCue);
         }
-        public static void DrawSightLine(SpriteBatch spriteBatch, DiagonalLine SightLine, Texture2D SightLineTexture)
+
+        public static void DrawSightLine(SpriteBatch spriteBatch, DiagonalLine SightLine)
         {
-            DrawDiagonalLine(spriteBatch, SightLine, SightLineTexture);
+            DrawDiagonalLine(spriteBatch, SightLine);
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, SightLine);
         }
 
-        /**public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Color colour)
+        /*public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Texture colour)
         {
             Vector2 v = (end - start);
             sb.Draw(Game1.SmallWhiteSquare, start, null, colour, (float)Math.Atan2(v.Y, v.X), new Vector2(0f, 0.5f), new Vector2(v.Length(), thickness), SpriteEffects.None, 0f); 
-        }**/
-        public static void DrawButton(ref Button button, SpriteBatch spriteBatch)
+        }*/
+
+        /*public static void DrawButton(ref Button button, SpriteBatch spriteBatch)
         {
-            int border = 2;
-            spriteBatch.Draw(button.Color, new Rectangle((int)button.Origin.X - border, (int)button.Origin.Y - border * 2, (int)button.Dimensions.X + border * 2, (int)button.Dimensions.Y + border * 2), Color.Blue);
-            spriteBatch.DrawString(button.ButtonFont, button.Text, button.Origin, Color.White);
+            spriteBatch.Draw(BlankBox, new Rectangle((int)button.Origin.X - button.Border, (int)button.Origin.Y - button.Border * 2, (int)button.Dimensions.X + button.Border * 2, (int)button.Dimensions.Y + button.Border * 2), button.Colour);
+            spriteBatch.DrawString(button.Font, button.Text, button.Origin, Color.White);
             //Console.WriteLine(button.Origin);
-        }
-        public static void DrawTextBox(ref TextBox textbox, SpriteBatch spriteBatch)
+        }*/
+
+        /*public static void DrawTextBox(ref RegTextBox textbox, SpriteBatch spriteBatch)
         {
-            int border = 2;
             Color color;
             if (textbox.Pressed)
             {
-                color = Color.Red;
+                color = textbox.Colour;
             }
             else
             {
                 color = Color.Black;
             }
-            spriteBatch.Draw(textbox.Color, new Rectangle((int)textbox.Origin.X - border, (int)textbox.Origin.Y - border, (int)textbox.Dimensions.X + border * 2, (int)textbox.Dimensions.Y + border * 2), color);
-            spriteBatch.Draw(textbox.Color, new Rectangle((int)textbox.Origin.X, (int)textbox.Origin.Y, (int)textbox.Dimensions.X, (int)textbox.Dimensions.Y), Color.White);
-            DrawTextBoxLetters(textbox, spriteBatch);
-        }
-        public static void DrawBlinkingKeyLine(TextBox textbox, SpriteBatch spriteBatch)
+            spriteBatch.Draw(BlankBox, new Rectangle((int)textbox.Origin.X - textbox.Border, (int)textbox.Origin.Y - textbox.Border, (int)textbox.Dimensions.X + textbox.Border * 2, (int)textbox.Dimensions.Y + textbox.Border * 2), color);
+            spriteBatch.Draw(BlankBox, new Rectangle((int)textbox.Origin.X, (int)textbox.Origin.Y, (int)textbox.Dimensions.X, (int)textbox.Dimensions.Y), Color.White);
+            if (textbox.Chars.Count > 0 | textbox.Pressed)
+            {
+                DrawTextBoxLetters(textbox, spriteBatch);
+            }
+            else
+            {
+                spriteBatch.DrawString(textbox.Font, textbox.TempText, textbox.Origin, Color.Gray);
+            }
+        }*/
+
+        /*public static void DrawBlinkingKeyLine(RegTextBox textbox, SpriteBatch spriteBatch)
         {
             int depth = 2;
-            spriteBatch.Draw(textbox.Color, new Rectangle((int)textbox.Origin.X + depth + textbox.Pointer * ButtonFunctions.CharacterGap, (int)textbox.Origin.Y + depth, 1, (int)textbox.Dimensions.Y - 2 * depth), Color.Black);
-        }
-        public static void DrawTextBoxLetters(TextBox textbox, SpriteBatch spriteBatch)
+            spriteBatch.Draw(BlankBox, new Rectangle((int)textbox.Origin.X + depth + textbox.Pointer * LetterWidth, (int)textbox.Origin.Y + depth, 1, (int)textbox.Dimensions.Y - 2 * depth), Color.Black);
+        }*/
+
+        /*public static void DrawTextBoxLetters(RegTextBox textbox, SpriteBatch spriteBatch)
         {
-            for (int x = 0; x < textbox.Chars.Count(); x++)
+            if (textbox.Chars.Count() <= textbox.MaxChars)
             {
-                spriteBatch.DrawString(textbox.TextFont, textbox.Chars[x], new Vector2(textbox.Origin.X + x * ButtonFunctions.CharacterGap + 1, textbox.Origin.Y), Color.Black);
+                for (int x = 0; x < textbox.Chars.Count(); x++)
+                {
+                    spriteBatch.DrawString(textbox.Font, textbox.Chars[x], new Vector2(textbox.Origin.X + x * LetterWidth + 1, textbox.Origin.Y), Color.Black);
+                }
             }
-        }
+            else
+            {
+                for (int x = 0; x < textbox.MaxChars; x++)
+                {
+                    int y = x + textbox.Chars.Count() - textbox.MaxChars;
+                    spriteBatch.DrawString(textbox.Font, textbox.Chars[y], new Vector2(textbox.Origin.X + x * LetterWidth + 1, textbox.Origin.Y), Color.Black);
+                }
+            }
+        }*/
+
+        /*public static void DrawMiniGraph(MiniGraph mg, SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(BlankBox, new Rectangle((int)mg.Origin.X, (int)mg.Origin.Y, (int)mg.Dimensions.X, (int)mg.Dimensions.Y), Color.Black); //Background
+            spriteBatch.Draw(BlankBox, new Rectangle((int)(mg.Origin.X + 0.25 * mg.Dimensions.X), (int)mg.Origin.Y, 1, (int)mg.Dimensions.Y), Color.White); //y-axis
+            spriteBatch.Draw(BlankBox, new Rectangle((int)(mg.Origin.X), (int)(mg.Origin.Y + mg.Dimensions.Y - 5), (int)(mg.Dimensions.X), 1), Color.White); //x-axis
+            spriteBatch.DrawString(Game1.TextBoxFont, ((int)(mg.Max + 0.5f)).ToString(), new Vector2(mg.Origin.X, mg.Origin.Y - (LetterHeight + 2)), Color.White);
+            spriteBatch.DrawString(Game1.TextBoxFont, "0", new Vector2(mg.Origin.X, mg.Origin.Y + mg.Dimensions.Y + 2), Color.White);
+            //Console.WriteLine(mg.Values.Peek(mg.Values));
+            float[] items = mg.Values.GetContents();
+            for (int x = 0; x < mg.Values.GetTail(); x++)
+            {
+                spriteBatch.Draw(BlankBox, new Rectangle((int)mg.Origin.X + x, (int)(((mg.Origin.Y + mg.Dimensions.Y) - (items[x] / mg.Max) * mg.Dimensions.Y)), 1, 1), Color.Red);
+            }
+        }*/
+
+        /*public static void DrawNumBox(NumBox nb, SpriteBatch spriteBatch)
+        {
+            //spriteBatch.Draw(BlankBox, new Rectangle((int)nb.Origin.X - BorderWidth, (int)nb.Origin.Y - BorderWidth, (int)nb.Dimensions.X + 2 * BorderWidth, (int)nb.Dimensions.Y + 2 * BorderWidth), Color.Black); //Border
+            DrawButton(ref nb.Left, spriteBatch);
+            spriteBatch.Draw(BlankBox, new Rectangle((int)nb.Origin.X + LetterWidth + nb.Border, (int)nb.Origin.Y - nb.Border * 2, (int)nb.Dimensions.X + 2 * (nb.Border - LetterWidth), LetterHeight + 2 * nb.Border), nb.Colour); //Middle TextBox
+            spriteBatch.DrawString(nb.Font, Debug.rows.ToString(), new Vector2((int)nb.Origin.X + LetterWidth + 3 * nb.Border, (int)nb.Origin.Y - nb.Border), Color.White); //Text (number)
+            DrawButton(ref nb.Right, spriteBatch);
+        }*/
+
+        /*public static void DrawPlayerNames(SpriteBatch spriteBatch,  SpriteFont font, Vector2 pos1, Vector2 pos2, string name1, string name2)
+        {
+            spriteBatch.DrawString(font, name1, pos1, Color.Black);
+            spriteBatch.DrawString(font, name2, pos2, Color.Black);
+        }*/
     }
 }

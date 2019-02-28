@@ -9,15 +9,23 @@ namespace MonoGamePool1
 {
     public static class Collisions
     {
-        #region test
         public static Tuple<Ball, Ball> Ball_Ball(Ball a, Ball b)
         {
             if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) && !a.Collision && !b.Collision)
             {
-                Vector2 vectorBetweenBalls = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2
-                float distanceBetweenBalls = vectorBetweenBalls.Length(); // Pythagoras of magnitude to find hypotenuse
+                Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2: DISTANCE BETWEEN BALLS IN VECTOR2 FORM
+                float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse : DISTANCE BETWEEN BALLS AS FLOAT
 
-                Vector2 minimumTranslationVector = vectorBetweenBalls * ((a.Radius + b.Radius - distanceBetweenBalls) / distanceBetweenBalls);
+                /*if (Vector2.Distance(a.Center, b.Center) != distanceBetweenBalls) //REPLACE WITH DISTANCE()
+                {
+                    Console.Write(distanceBetweenBalls);
+                    Console.Write(" , ");
+                    Console.WriteLine(Vector2.Distance(a.Center, b.Center));
+                }*/
+
+                float overlap = a.Radius + b.Radius - dist;
+
+                Vector2 minimumTranslationVector = componentsDist * (overlap / dist);
 
                 float mass = 0.170097f; // a.Mass
                 float mass2 = 0.170097f; // b.Mass
@@ -25,7 +33,7 @@ namespace MonoGamePool1
                 float invMass1 = 1f / mass;
                 float invMass2 = 1f / mass2;
 
-                float totalMass = invMass1 + invMass2; // Total mass
+                float totalMass = invMass1 + invMass2; // (m2 + m1)/(m1*m2)
 
                 //based on proportion of total mass, move the balls apart more or less
                 a.Center += minimumTranslationVector * (invMass1 / totalMass);
@@ -34,7 +42,7 @@ namespace MonoGamePool1
                 //calculate impact speed
                 Vector2 impactVelocity = a.Velocity - b.Velocity;
 
-                Vector2 vectorNormalised = vectorBetweenBalls / vectorBetweenBalls.Length();
+                Vector2 vectorNormalised = componentsDist / componentsDist.Length();
 
                 float vn = Vector2.Dot(impactVelocity, vectorNormalised);
 
@@ -43,7 +51,7 @@ namespace MonoGamePool1
                 {
                     //calculate magnitude of the impulse
                     float i = (-(1f - Physics.coefficient_of_restitution_ball) * vn) / totalMass;
-                    Vector2 impulse = vectorBetweenBalls * i;
+                    Vector2 impulse = componentsDist * i;
 
                     a.Velocity += impulse * invMass1;
                     b.Velocity -= impulse * invMass2;
@@ -52,20 +60,18 @@ namespace MonoGamePool1
 
             return new Tuple<Ball, Ball>(a, b);
         }
-        #endregion
 
         public static Tuple<Ball, Ball> Ball_Ball_Old(Ball a, Ball b)
         {
-            //Ball TempA = new Ball(a.ID, new Vector2(a.Center.X - a.Velocity.X, a.Center.Y - a.Velocity.Y), a.Radius, a.Velocity, a.Acceleration, a.Color);
-            //Ball TempB = new Ball(a.ID, new Vector2(b.Center.X - b.Velocity.X, b.Center.Y - b.Velocity.Y), b.Radius, b.Velocity, b.Acceleration, b.Color);
+            //Ball TempA = new Ball(a.ID, new Vector2(a.Center.X - a.Velocity.X, a.Center.Y - a.Velocity.Y), a.Radius, a.Velocity, a.Acceleration, a.Texture);
+            //Ball TempB = new Ball(a.ID, new Vector2(b.Center.X - b.Velocity.X, b.Center.Y - b.Velocity.Y), b.Radius, b.Velocity, b.Acceleration, b.Texture);
             float Decrease = 0.9f;
             //Console.WriteLine("{0}: {1}, {2}: {3}", a.ID, a.Collision, b.ID, b.Collision);
             if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) && !a.Collision && a.PrevBall != b.ID)
             //if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) == true && (General.SameSign(a.Center.X - a.PrevCenter.X, a.Velocity.X) == true || General.SameSign(a.Center.Y - a.PrevCenter.Y, a.Velocity.Y) == true))
             {
-                Console.WriteLine("************************************************************************************");
-                General.WriteBall(a);
-                General.WriteBall(b);
+                a.Write();
+                b.Write();
                 Console.WriteLine("\n");
                 a.Collision = true;
                 b.Collision = true;
@@ -214,14 +220,15 @@ namespace MonoGamePool1
             }
             if (a.Collision)
             {
-                General.WriteBall(a);
-                General.WriteBall(b);
+                a.Write();
+                b.Write();
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
             }
 
             return new Tuple<Ball, Ball>(a, b);
         }
+
         public static Tuple<Ball, Ball> Static_Ball(Ball a, Ball b)
         {
             //a static, b dynamic
@@ -258,10 +265,12 @@ namespace MonoGamePool1
             b.Velocity = new Vector2((float)CompY, (float)CompX);
             return new Tuple<Ball, Ball>(a, b);
         }
+
         public static void Dynamic_Ball(Ball a, Ball b)
         {
 
         }
+
         public static Ball Ball_Wall(Ball a, int BorderWidth, int ScreenWidth, int ScreenHeight)
         {
             float Decrease = 0.95f;
@@ -301,6 +310,7 @@ namespace MonoGamePool1
             }
             return a;
         }
+
         public static List<Ball> Ball_Pocket(Ball a, List<Pocket> PocketList, List<Ball> BallsList, int index, Texture2D CueBall, List<Ball> Graveyard, int ScreenWidth)
         {
             //int Tracker = 0;
@@ -310,7 +320,7 @@ namespace MonoGamePool1
                 {
                     if (a.ID == 15)
                     {
-                        BallsList[index] = new Ball(15, new Vector2(274, 274), a.Radius, Vector2.Zero, Vector2.Zero, a.Color, false, 15);
+                        BallsList[index] = new Ball(15, new Vector2(274, 274), a.Radius, Vector2.Zero, Vector2.Zero, a.Colour, false, 15);
 
                         //a.Center = new Vector2(274, 274);
                         //a.Velocity = new Vector2(0, 0);
@@ -329,7 +339,7 @@ namespace MonoGamePool1
                     {
                         if (a.ID != 6)
                         {
-                            Graveyard.Add(new Ball(a.ID, new Vector2((ScreenWidth / 2 - 25 * 13) + (Graveyard.Count) * 50, 600), a.Radius, Vector2.Zero, Vector2.Zero, a.Color, false, a.ID));
+                            Graveyard.Add(new Ball(a.ID, new Vector2((ScreenWidth / 2 - 25 * 13) + (Graveyard.Count) * 50, 600), a.Radius, Vector2.Zero, Vector2.Zero, a.Colour, false, a.ID));
                         }
                         BallsList.Remove(a);
                         //return 2; //Red or Yellow Ball Potted
@@ -338,6 +348,7 @@ namespace MonoGamePool1
             }
             return BallsList;
         }
+
         public static bool BallsTouching(Vector2 a, Vector2 b, int Rad1, int Rad2)
         {
             if ((Vector2.Distance(a, b)) <= (Rad1 + Rad2))

@@ -43,24 +43,27 @@
   <ItemGroup>
     <Compile Include="Ball.cs" />
     <Compile Include="Button.cs" />
-    <Compile Include="ButtonFunctions.cs" />
     <Compile Include="Collisions.cs" />
-    <Compile Include="DataStructures.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="ExtraStackFunctions.cs" />
     <Compile Include="FileSaving.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GamePlay.cs" />
+    <Compile Include="GameStatus.cs" />
     <Compile Include="General.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="Init.cs" />
     <Compile Include="Input.cs" />
+    <Compile Include="Line.cs" />
+    <Compile Include="MiniGraph.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Stack.cs" />
-    <Compile Include="TextBoxFunctions.cs" />
+    <Compile Include="TextBox.cs" />
     <Compile Include="Update.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +71,7 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

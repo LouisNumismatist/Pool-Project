@@ -14,11 +14,13 @@ namespace MonoGamePool1
             Vector2 Flip = new Vector2(-1, 1);
             a = Vector2.Multiply(a, Flip);
         }
+
         static void FlipY(ref Vector2 a)
         {
             Vector2 Flip = new Vector2(1, -1);
             a = Vector2.Multiply(a, Flip);
         }
+
         public static bool SameSign(double a, double b)
         {
             if ((a > 0) && (b > 0) || ((a < 0) && (b < 0)))
@@ -30,11 +32,8 @@ namespace MonoGamePool1
                 return false;
             }
         }
-        public static void WriteBall(Ball a)
-        {
-            Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", a.ID, a.Center, a.Radius, a.Velocity, a.Acceleration, a.Color, a.Collision, a.PrevBall);
-        }
-        /**public static bool InsideGameSpace(Vector2 Coord, int ScreenWidth, int ScreenHeight)
+
+        /*public static bool InsideGameSpace(Vector2 Coord, int ScreenWidth, int ScreenHeight)
         {
             return MouseWithinArea(Coord, Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight));
             if (Coord.X >= 0 && Coord.X <= ScreenWidth && Coord.Y >= 0 && Coord.Y <= ScreenHeight)
@@ -45,13 +44,14 @@ namespace MonoGamePool1
             {
                 return false;
             }
-        }**/
+        }*/
 
         /*public static void EndGame()
         {
 
-        }*/
-        //x = 10 - y^3
+        }
+        //x = 10 - y^3*/
+
         public static bool NoBallsMoving(List<Ball> BallsList)
         {
             bool status = true;
@@ -65,18 +65,9 @@ namespace MonoGamePool1
             }
             return status;
         }
-        public static bool MouseWithinArea(Vector2 MousePosition, Vector2 TopLeft, Vector2 LowRight)
-        {
-            if (MousePosition.X >= TopLeft.X && MousePosition.X <= LowRight.X &&
-                MousePosition.Y >= TopLeft.Y && MousePosition.Y <= LowRight.Y)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+
+
+
         public static bool InAlpha(string letter)
         {
             List<char> Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
@@ -88,6 +79,31 @@ namespace MonoGamePool1
             {
                 return false;
             }
+        }
+
+        public static decimal ToExponential(string item)
+        {
+            Console.WriteLine(item);
+            string[] mant = item.Split("E".ToCharArray());
+            Console.WriteLine(mant[0]);
+            decimal number = Convert.ToDecimal(mant[0]);
+            number *= (decimal)Math.Pow(10, Convert.ToDouble(mant[1]));
+            return number;
+        }
+
+        public static void IncPlayer(ref Player player)
+        {
+            player.Shots += 1;
+        }
+
+        public static void NullPlayer(ref Player player)
+        {
+            player.Shots = 0;
+        }
+
+        public static float RealDist(int pixels)
+        {
+            return pixels * 0.25f;
         }
     }
 }
