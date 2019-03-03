@@ -44,7 +44,7 @@ namespace MonoGamePool1
         public Vector2 Acceleration;
         public bool Collision;
         public int PrevBall;
-        public float Weight { get { return Weight; } set { Weight = value; } }
+        public float Weight;
 
         public Ball(int id, Vector2 center, float radius, Vector2 velocity, Vector2 acceleration, Color colour, bool collision, int prevBall)
         {

@@ -147,4 +147,51 @@ namespace MonoGamePool1
             Right.Draw(spriteBatch);
         }
     }
+
+    public class SwitchBox : SelectBox
+    {
+        public List<Color> ActiveColours = new List<Color> { Color.LightCyan, Color.Green };
+        public List<Color> DeactiveColours = new List<Color> { Color.Red, Color.LightCyan };
+        public Button On;
+        public Button Off;
+        public bool State = true;
+
+        public SwitchBox(Vector2 origin, SpriteFont font)
+        {
+            Origin = origin;
+            Dimensions = new Vector2(2 * LetterWidth, LetterWidth);
+            Colour = Color.LightGray;
+            Font = font;
+            On = new Button(origin, " ", Color.White, font);
+            Off = new Button(new Vector2(origin.X + LetterWidth + Border * 2, Origin.Y), " ", Color.White, font);
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (State)
+            {
+                On.Colour = ActiveColours[0];
+                Off.Colour = ActiveColours[1];
+                On.Draw(spriteBatch);
+                Off.Draw(spriteBatch);
+            }
+            else
+            {
+                On.Colour = DeactiveColours[0];
+                Off.Colour = DeactiveColours[1];
+                On.Draw(spriteBatch);
+                Off.Draw(spriteBatch);
+            }
+        }
+
+        public void Update()
+        {
+            On.Update(Input.mousePosition);
+            Off.Update(Input.mousePosition);
+            if ((On.Pressed && State == false) || (Off.Pressed && State == true))
+            {
+                State = !State;
+            }
+        }
+    }
 }

@@ -33,7 +33,7 @@ namespace MonoGamePool1
         public static int ScreenWidth = 1096; //increased from 1046
         public static int BallDiam = 22;                                                //SCALE: 1px = 0.25cm = 0.0025m
         public List<Ball> BallsList = new List<Ball>();                                 //Use 9ft Pool Table (274cm x 137cm, 1096px x 548px)
-        public List<Pocket> PocketList = new List<Pocket>();
+        public List<Pocket> PocketList = new List<Pocket>();                            //Max Velocity should be 16m/s which is 64px/s
         public List<Pocket> OuterPockets = new List<Pocket>();
         public List<Ball> Graveyard = new List<Ball>();
         public List<Button> ButtonList = new List<Button>();
@@ -55,6 +55,7 @@ namespace MonoGamePool1
         public static string Player2Name = "PlayerB";
         public static int CurrentPlayer = 0;
         public static Ball LastBall;
+        public static SwitchBox SightSelect;
 
         public static readonly Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D> { { "Circle", BlankCircle }, { "Box", BlankBox } };
 
@@ -108,6 +109,8 @@ namespace MonoGamePool1
             DebugButton = new Button(new Vector2(ScreenWidth + 50, 150),"DEBUG", Color.Blue, font);
             TypeBox = new RegTextBox(new Vector2(ScreenWidth + 25, 510), TextBoxFont, 10, "Enter:");
             NameBox = new StackTextBox(new Vector2(ScreenWidth + 25, 530), 12, TextBoxFont, "Name:");
+
+            SightSelect = new SwitchBox(new Vector2(ScreenWidth + 25, 560), TextBoxFont);
 
             RowsBox = new NumBox(new Vector2(ScreenWidth + 50, 180), TextBoxFont, 14);
 
@@ -171,6 +174,12 @@ namespace MonoGamePool1
             RowsBox.Update();
             TypeBox.UpdatePressed();
             NameBox.UpdatePressed();
+
+            SightSelect.Update();
+            if ((SightSelect.State && !Debug.sightStatus) || (!SightSelect.State && Debug.sightStatus))
+            {
+                Debug.sightStatus = !Debug.sightStatus;
+            }
 
             if (TypeBox.Pressed)
             {
@@ -261,7 +270,18 @@ namespace MonoGamePool1
 
             TypeBox.Draw(spriteBatch);
 
+            SightSelect.Draw(spriteBatch);
+            if (Debug.sightStatus)
+            {
+                spriteBatch.DrawString(SightSelect.Font, "Sight Line Active", new Vector2(SightSelect.Origin.X + SightSelect.Dimensions.X + 10, SightSelect.Origin.Y), Color.Black, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0);
+            }
+            else
+            {
+                spriteBatch.DrawString(SightSelect.Font, "Sight Line Inactive", new Vector2(SightSelect.Origin.X + SightSelect.Dimensions.X + 10, SightSelect.Origin.Y), Color.Black, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0);
+            }
+
             RowsBox.Draw(spriteBatch);
+            spriteBatch.DrawString(RowsBox.Font, "Rows", new Vector2(RowsBox.Origin.X + RowsBox.Dimensions.X + 15, RowsBox.Origin.Y), Color.Black);
 
             SpeedTimeGraph.Draw(spriteBatch);
             ForceTimeGraph.Draw(spriteBatch);
@@ -307,7 +327,7 @@ namespace MonoGamePool1
     }
 }
 
-//Highscores entered into database
+//Highscores entered into database  X
 //Names checked against previous names
 //Passwords entered (relational database and hashing)
 //Use textbox stack to enter text
