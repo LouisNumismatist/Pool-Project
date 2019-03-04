@@ -124,8 +124,7 @@ namespace MonoGamePool1
 
         public static double NewtonAcc(Ball ball)
         {
-            Console.WriteLine((ball.Weight).ToString() + " " + (ball.Acceleration.X).ToString() + " " + (ball.Acceleration.Y).ToString());
-            return (ball.Weight/g) * Pythagoras1(ball.Acceleration.X, ball.Acceleration.Y);
+            return ball.Mass * Pythagoras1(ball.Acceleration.X, ball.Acceleration.Y);
         }
 
         public static double Acceleration(float v1, float v2, float t)
@@ -136,6 +135,25 @@ namespace MonoGamePool1
         public static double RestitutionVelocity(float u, float coefficient)
         {
             return u * coefficient;
+        }
+
+        public static double KineticEnergy(float m, float v)
+        {
+            return 0.5 * m * Math.Pow(v, 2);
+        }
+
+        public static double Momentum(float m, float v)
+        {
+            return m * v;
+        }
+
+        public static Tuple<float, float> FindVelocities(float m1, float m2, float u1, float u2, float e)
+        {
+            float v1 = (m1 * u1 + m2 * u2 - e * m2 * (u2 - u1)) / (m1 + m2);
+
+            float v2 = e * (u2 - u1) + v1;
+
+            return new Tuple<float, float>(v1, v2);
         }
     }
 }

@@ -38,13 +38,14 @@ namespace MonoGamePool1
             return balls;
         }
 
-        public static void ResetGame(ref List<Ball> BallsList, ref List<Ball> Graveyard, MiniGraph mg1, MiniGraph mg2, Texture2D circle, Texture2D box)
+        public static void ResetGame(ref List<Ball> BallsList, ref List<Ball> Graveyard, MiniGraph mg1, MiniGraph mg2, MiniGraph mg3, Texture2D circle, Texture2D box)
         {
             BallsList.Clear();
             Graveyard.Clear();
             Init.InitialiseBalls(ref BallsList, circle);
-            new MiniGraph(mg1.Origin, (int)mg1.Dimensions.X, (int)mg1.Dimensions.Y);
-            new MiniGraph(mg2.Origin, (int)mg2.Dimensions.X, (int)mg2.Dimensions.Y);
+            new MiniGraph(mg1.Origin, (int)mg1.Dimensions.X, (int)mg1.Dimensions.Y, mg1.Label);
+            new MiniGraph(mg2.Origin, (int)mg2.Dimensions.X, (int)mg2.Dimensions.Y, mg2.Label);
+            new MiniGraph(mg3.Origin, (int)mg3.Dimensions.X, (int)mg3.Dimensions.Y, mg3.Label);
         }
 
         public static void PauseGame(ref List<Ball> BallsList)

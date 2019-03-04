@@ -44,7 +44,7 @@ namespace MonoGamePool1
         public Vector2 Acceleration;
         public bool Collision;
         public int PrevBall;
-        public float Weight;
+        public float Mass;
 
         public Ball(int id, Vector2 center, float radius, Vector2 velocity, Vector2 acceleration, Color colour, bool collision, int prevBall)
         {
@@ -58,11 +58,11 @@ namespace MonoGamePool1
             PrevBall = prevBall;
             if (id == 15)
             {
-                Weight = 0.16f;
+                Mass = 0.16f;
             }
             else
             {
-                Weight = 0.17f;
+                Mass = 0.17f;
             }
         }
 

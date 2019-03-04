@@ -50,6 +50,7 @@ namespace MonoGamePool1
         public static NumBox RowsBox;
         public static MiniGraph SpeedTimeGraph;
         public static MiniGraph ForceTimeGraph;
+        public static MiniGraph EkTimeGraph;
         public List<Player> Players = new List<Player>();
         public static string Player1Name = "PlayerA";
         public static string Player2Name = "PlayerB";
@@ -114,8 +115,9 @@ namespace MonoGamePool1
 
             RowsBox = new NumBox(new Vector2(ScreenWidth + 50, 180), TextBoxFont, 14);
 
-            SpeedTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 210), 175, 100);
-            ForceTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 350), 175, 100);
+            SpeedTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 210), 175, 100, "Speed-Time");
+            ForceTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 350), 175, 100, "Force-Time");
+            EkTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 350), 175, 100, "Kinetic Energy-Time");
 
             Players.Add(new Player(1, Player1Name));
             Players.Add(new Player(2, Player2Name));
@@ -197,7 +199,7 @@ namespace MonoGamePool1
             }
             if (ResetButton.Pressed && Input.LeftMouseJustClicked())
             {
-                GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, ForceTimeGraph, BlankCircle, BlankBox);
+                GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, ForceTimeGraph, EkTimeGraph, BlankCircle, BlankBox);
             }
             if (PauseButton.Pressed && Input.LeftMouseJustClicked())
             {
@@ -240,6 +242,7 @@ namespace MonoGamePool1
             {
                 SpeedTimeGraph.Update((float)Physics.Pythagoras1(BallsList[BallsList.Count - 1].Velocity.X, BallsList[BallsList.Count - 1].Velocity.Y));
                 ForceTimeGraph.Update((float)Physics.NewtonAcc(BallsList[BallsList.Count - 1]));
+                EkTimeGraph.Update((float)Physics.KineticEnergy(BallsList[BallsList.Count - 1].Mass, (float)Physics.Pythagoras1(BallsList[BallsList.Count - 1].Velocity.X, BallsList[BallsList.Count - 1].Velocity.Y)));
             }
             base.Update(gameTime);
         }
@@ -284,7 +287,8 @@ namespace MonoGamePool1
             spriteBatch.DrawString(RowsBox.Font, "Rows", new Vector2(RowsBox.Origin.X + RowsBox.Dimensions.X + 15, RowsBox.Origin.Y), Color.Black);
 
             SpeedTimeGraph.Draw(spriteBatch);
-            ForceTimeGraph.Draw(spriteBatch);
+            //ForceTimeGraph.Draw(spriteBatch);
+            EkTimeGraph.Draw(spriteBatch);
 
             if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
             {
