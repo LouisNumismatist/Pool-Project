@@ -47,5 +47,13 @@ namespace MonoGamePool1
             }
         }
 
+        public static void PlaceCueBall(ref Ball CueBall, Vector2 mousePosition)
+        {
+            if (mousePosition.Y > Game1.BorderWidth && mousePosition.X < Game1.ScreenHeight - Game1.BorderWidth)
+            {
+                
+            }
+        }
+
     }
 }

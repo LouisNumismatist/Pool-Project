@@ -27,17 +27,17 @@ namespace MonoGamePool1
 
                 Vector2 minimumTranslationVector = componentsDist * (overlap / dist);
 
-                float mass = 0.170097f; // a.Mass
-                float mass2 = 0.170097f; // b.Mass
+                //float mass = 0.170097f; // a.Mass
+                //float mass2 = 0.170097f; // b.Mass
 
-                float invMass1 = 1f / mass;
-                float invMass2 = 1f / mass2;
+                //float invMass1 = 1f / a.Mass;
+                //float invMass2 = 1f / b.Mass;
 
-                float totalMass = invMass1 + invMass2; // (m2 + m1)/(m1*m2)
+                float totalMass = (1 / a.Mass) + (1 / b.Mass); // (m2 + m1)/(m1*m2)
 
                 //based on proportion of total mass, move the balls apart more or less
-                a.Center += minimumTranslationVector * (invMass1 / totalMass);
-                b.Center -= minimumTranslationVector * (invMass2 / totalMass);
+                a.Center += minimumTranslationVector * ((1 / a.Mass) / totalMass);
+                b.Center -= minimumTranslationVector * ((1 / b.Mass) / totalMass);
 
                 //calculate impact speed
                 Vector2 impactVelocity = a.Velocity - b.Velocity;
@@ -50,11 +50,11 @@ namespace MonoGamePool1
                 if (vn <= 0f)
                 {
                     //calculate magnitude of the impulse
-                    float i = (-(1f - Physics.coefficient_of_restitution_ball) * vn) / totalMass;
+                    float i = (-(1 - Physics.coefficient_of_restitution_ball) * vn) / totalMass;
                     Vector2 impulse = componentsDist * i;
 
-                    a.Velocity += impulse * invMass1;
-                    b.Velocity -= impulse * invMass2;
+                    a.Velocity += impulse * (1 / a.Mass);
+                    b.Velocity -= impulse * (1 / b.Mass);
                 }
             }
 
@@ -227,6 +227,75 @@ namespace MonoGamePool1
             }
 
             return new Tuple<Ball, Ball>(a, b);
+        }
+
+        public static Tuple<Ball, Ball> Ball_Ball_New(Ball a, Ball b, float e)
+        {
+            float distance = Vector2.Distance(a.Center, b.Center); //For collision corection - visual
+            float overlap = (a.Radius + b.Radius) - distance;
+
+            float verticalComponent = Math.Abs(a.Center.Y - b.Center.Y); //Between balls
+            float horizontalComponent = Math.Abs(a.Center.X - b.Center.X);
+            float angle = (float)Math.Atan2(verticalComponent, horizontalComponent);
+
+            float aAngle = (float)Math.Atan2(a.Velocity.Y, a.Velocity.X); //Angle at which the balls interact with eachother
+            float bAngle = (float)Math.Atan2(b.Velocity.Y, b.Velocity.X);
+
+            float aCompAngle = angle - aAngle;
+            float bCompAngle = MathHelper.ToRadians(180) - angle - bAngle;
+
+            float aSpeedPrev = a.Velocity.Length(); //Scalar speeds of balls
+            float bSpeedPrev = b.Velocity.Length();
+
+            Vector2 aCompPrev = new Vector2(); //Rotated angles of interaction
+            Vector2 bCompPrev = new Vector2();
+
+            aCompPrev.X = (float)(aSpeedPrev * Math.Cos(aCompAngle)); //Convert to rotated components
+            bCompPrev.X = (float)(bSpeedPrev * Math.Cos(bCompAngle));
+
+            aCompPrev.Y = (float)(aSpeedPrev * Math.Sin(aCompAngle));
+            bCompPrev.Y = (float)(bSpeedPrev * Math.Sin(bCompAngle));
+
+            Vector2 aCompPost = new Vector2();
+            Vector2 bCompPost = new Vector2();
+
+            aCompPost.Y = aCompPrev.Y;
+            bCompPost.Y = bCompPrev.Y;
+
+            if (a.ID == 15 || b.ID == 15) //Cue Ball Collision
+            {
+                aCompPost.X = (aCompPrev.X * (a.Mass + e * a.Mass) - bCompPrev.X * (e * b.Mass)) / (a.Mass + b.Mass);
+                bCompPost.X = (bCompPrev.X * (e * b.Mass - b.Mass) + aCompPrev.X * (e * a.Mass)) / (a.Mass + b.Mass);
+            }
+            else //Two normal Balls colliding
+            {
+                aCompPost.X = (aCompPrev.X * (1 + e) + bCompPrev.X * (e - 1)) / 2;
+                bCompPost.X = (aCompPrev.X * (1 - e) - bCompPrev.X * (e + 1)) / 2;
+            }
+
+            float aAnglePost = (float)Math.Atan2(aCompPost.Y, aCompPost.X);
+            float bAnglePost = (float)Math.Atan2(bCompPost.Y, bCompPost.X);
+
+            float aSpeedPost = aCompPost.Length();
+            float bSpeedPost = bCompPost.Length();
+
+            float aCompAnglePost = angle - aAnglePost;
+            float bCompAnglePost = MathHelper.ToRadians(180) - angle - bAnglePost;
+
+            Vector2 aFinalComp = new Vector2();
+            Vector2 bFinalComp = new Vector2();
+
+            aFinalComp.X = (float)(aSpeedPost * Math.Cos(aCompAnglePost)); //Convert to rotated components
+            bFinalComp.X = (float)(bSpeedPost * Math.Cos(bCompAnglePost));
+
+            aFinalComp.Y = (float)(aSpeedPost * Math.Sin(aCompAnglePost));
+            bFinalComp.Y = (float)(bSpeedPost * Math.Sin(bCompAnglePost));
+
+            a.Velocity = aFinalComp;
+            b.Velocity = bFinalComp;
+
+            return new Tuple<Ball, Ball>(a, b);
+
         }
 
         public static Tuple<Ball, Ball> Static_Ball(Ball a, Ball b)

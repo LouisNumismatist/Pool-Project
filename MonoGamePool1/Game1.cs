@@ -216,6 +216,8 @@ namespace MonoGamePool1
                 for (int b = a + 1; b < BallsList.Count; b++)
                 {
                     Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
+                    
+                    //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
                     BallsList[a] = TempTuple.Item1;
                     BallsList[b] = TempTuple.Item2;
                 }

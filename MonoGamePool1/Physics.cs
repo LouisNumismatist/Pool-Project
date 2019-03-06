@@ -10,13 +10,14 @@ namespace MonoGamePool1
 {
     public static class Physics
     {
-        public const float coefficient_of_friction_ball = 0.08f; //0.03-0.08
-        public const float coefficient_sliding_friction_cloth = 0.4f; //0.15-0.4
-        public const float coefficient_of_rolling_resistance_cloth = 0.015f; //0.005-0.015
+        public const float coefficient_of_friction_ball = 0.08f; //0.03-0.08  - FRICTION IN COLLISION
+        public const float coefficient_sliding_friction_cloth = 0.4f; //0.15-0.4 - IGNORE: FOR SPIN
+        public const float coefficient_of_rolling_resistance_cloth = 0.015f; //0.005-0.015 - FRICTION ON TABLE
 
+        //FOR INSTANTANOIOUS ACTIONS
         public const float coefficient_of_restitution_ball = 0.98f; // 0.92-0.98
         public const float coefficient_of_restitution_rail = 0.9f; //0.6-0.9
-        public const float coefficient_of_restitution_table = 0.5f;
+        public const float coefficient_of_restitution_table = 0.5f; //IGNORE: BOUNCING BALL
         public const float coefficient_of_restitution_cue = 0.75f; //0.71-0.75 (leather tip), 0.81-0.87 (phenolic tip)
 
         public const float ball_mass_moment_of_inertia = 0.4f; //2/5 mR^2
