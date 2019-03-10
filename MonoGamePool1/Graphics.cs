@@ -19,9 +19,6 @@ namespace MonoGamePool1
         static readonly int ScreenWidth = Game1.ScreenWidth;
         static readonly int BallDiam = Game1.BallDiam;
 
-        //static readonly int LetterHeight = 20;
-        //static readonly int LetterWidth = 11;
-
         public static Texture2D BlankBox = Game1.BlankBox;
         public static Texture2D BlankCircle = Game1.BlankCircle;
 
@@ -109,7 +106,7 @@ namespace MonoGamePool1
             DrawLine(sb, a.Start, a.End, a.Thickness, Color.Brown);
         }*/
 
-        public static void DrawDiagonalLine(SpriteBatch spriteBatch, DiagonalLine a)
+        /*public static void DrawDiagonalLine(SpriteBatch spriteBatch, DiagonalLine a)
         {
             float m = Physics.Gradient(a.Start, a.End);
             int count = 0;
@@ -162,10 +159,10 @@ namespace MonoGamePool1
                     Console.WriteLine("{0}, {1}, {2}, {3}", (int)a.End.X, (int)a.End.Y, a.Thickness, (int)a.Start.Y - (int)a.End.Y);
                     spriteBatch.Draw(PoolCueTexture, new Rectangle((int)a.End.X, (int)a.End.Y, a.Thickness, (int)a.Start.Y - (int)a.End.Y), Color.LightGray);
                 }
-            }*/
-        }
+            }
+        }*/
 
-        public static Tuple<int, int> InnerDrawDiagonalLines(SpriteBatch spriteBatch, DiagonalLine a, int y, int x, float m, float c, int prevY, int newY, int prevX, int newX, int count)
+        /*public static Tuple<int, int> InnerDrawDiagonalLines(SpriteBatch spriteBatch, DiagonalLine a, int y, int x, float m, float c, int prevY, int newY, int prevX, int newX, int count)
         {
             if (!a.Dotted || x % 5 == 0)
             {
@@ -203,7 +200,7 @@ namespace MonoGamePool1
                 prevX = x - 1;
             }
             return new Tuple<int, int>(prevY, prevX);
-        }
+        }*/
 
         /*public static void DrawDiagonalLineBROKEN(SpriteBatch spriteBatch, DiagonalLine a)
         {
@@ -236,21 +233,21 @@ namespace MonoGamePool1
             foreach (DiagonalLine a in DiagonalLines)
             {
                 Console.WriteLine("a, {0}, {1}", a.Start, a.End);
-                DrawDiagonalLine(spriteBatch, a);
+                a.Draw(spriteBatch);
             }
         }
 
-        public static void DrawPoolCue(SpriteBatch spriteBatch, DiagonalLine PoolCue)
+        /*public static void DrawPoolCue(SpriteBatch spriteBatch, DiagonalLine PoolCue)
         {
-            DrawDiagonalLine(spriteBatch, PoolCue);
+            PoolCue.Draw(spriteBatch);
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, PoolCue);
-        }
+        }*/
 
-        public static void DrawSightLine(SpriteBatch spriteBatch, DiagonalLine SightLine)
+        /*public static void DrawSightLine(SpriteBatch spriteBatch, DiagonalLine SightLine)
         {
-            DrawDiagonalLine(spriteBatch, SightLine);
+            SightLine.Draw(spriteBatch);
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, SightLine);
-        }
+        }*/
 
         /*public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Texture colour)
         {

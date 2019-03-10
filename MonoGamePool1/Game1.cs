@@ -42,6 +42,7 @@ namespace MonoGamePool1
         public static DiagonalLine SightLine;
         public static Button SaveButton;
         public static Button LoadButton;
+        public static Button HighScoresButton;
         public static Button ResetButton;
         public static Button PauseButton;
         public static Button DebugButton;
@@ -57,6 +58,7 @@ namespace MonoGamePool1
         public static int CurrentPlayer = 0;
         public static Ball LastBall;
         public static SwitchBox SightSelect;
+        public static HighScores hs;
 
         public static readonly Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D> { { "Circle", BlankCircle }, { "Box", BlankBox } };
 
@@ -89,11 +91,7 @@ namespace MonoGamePool1
             // TODO: Add your initialization logic here
 
             base.Initialize();
-
-            //System.Speech.Synthesis.SpeechSynthesizer speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
-            //speechSynthesizer.Speak("hello");
-
-
+            
             Init.InitialiseBalls(ref BallsList, BlankCircle);
             Init.InitialisePockets(ref OuterPockets, 26, Color.LightGray);
             Init.InitialisePockets(ref PocketList, 22, Color.Black);
@@ -104,7 +102,8 @@ namespace MonoGamePool1
             string tempString = FileSaving.ObjectToString(BallsList[0]);
             //Ball tempBall = FileSaving.StringToObject(tempString, BallsDict);
             SaveButton = new Button(new Vector2(ScreenWidth + 50, 30), "SAVE", Color.Blue, font);
-            LoadButton = new Button(new Vector2(ScreenWidth + 50, 60), "LOAD", Color.Blue, font);
+            LoadButton = new Button(new Vector2(ScreenWidth + 50 + 66, 30), "LOAD", Color.Blue, font);
+            HighScoresButton = new Button(new Vector2(ScreenWidth + 50, 60), "HIGHSCORES", Color.Blue, font); //Same row
             ResetButton = new Button(new Vector2(ScreenWidth + 50, 90), "RESET", Color.Blue, font);
             PauseButton = new Button(new Vector2(ScreenWidth + 50, 120), "PAUSE", Color.Blue, font);
             DebugButton = new Button(new Vector2(ScreenWidth + 50, 150),"DEBUG", Color.Blue, font);
@@ -121,6 +120,13 @@ namespace MonoGamePool1
 
             Players.Add(new Player(1, Player1Name));
             Players.Add(new Player(2, Player2Name));
+
+            System.Speech.Synthesis.SpeechSynthesizer speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
+
+            
+            
+            //speechSynthesizer.Speak("Welcome to eight ball pool. Please enter your names in the text box below");
+            //speechSynthesizer.Speak("Yoyo. Play the pool, yoyo.");
         }
 
         /// <summary>
@@ -170,6 +176,7 @@ namespace MonoGamePool1
 
             SaveButton.Update(Input.mousePosition);
             LoadButton.Update(Input.mousePosition);
+            HighScoresButton.Update(Input.mousePosition);
             ResetButton.Update(Input.mousePosition);
             PauseButton.Update(Input.mousePosition);
             DebugButton.Update(Input.mousePosition);
@@ -197,6 +204,11 @@ namespace MonoGamePool1
                 string path = @"C:\Users\Louis\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\2018-12-18-12-57-59";
                 BallsList = GameStatus.LoadGame(path);
             }
+            if (HighScoresButton.Pressed && Input.LeftMouseJustClicked())
+            {
+                hs = new HighScores();
+                hs.Show();
+            }
             if (ResetButton.Pressed && Input.LeftMouseJustClicked())
             {
                 GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, ForceTimeGraph, EkTimeGraph, BlankCircle, BlankBox);
@@ -216,7 +228,6 @@ namespace MonoGamePool1
                 for (int b = a + 1; b < BallsList.Count; b++)
                 {
                     Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
-                    
                     //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
                     BallsList[a] = TempTuple.Item1;
                     BallsList[b] = TempTuple.Item2;
@@ -229,7 +240,7 @@ namespace MonoGamePool1
                     PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
                     if (Debug.sightStatus)
                     {
-                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
+                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
                     }
                 }
                 else
@@ -269,6 +280,7 @@ namespace MonoGamePool1
 
             SaveButton.Draw(spriteBatch);
             LoadButton.Draw(spriteBatch);
+            HighScoresButton.Draw(spriteBatch);
             ResetButton.Draw(spriteBatch);
             PauseButton.Draw(spriteBatch);
             DebugButton.Draw(spriteBatch);
@@ -299,10 +311,10 @@ namespace MonoGamePool1
             //Graphics.DrawCushionDiagonals(spriteBatch, DiagonalLines, BlankBox);
             if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0)
             {
-                Graphics.DrawDiagonalLine(spriteBatch, PoolCue);
+                PoolCue.Draw(spriteBatch);
                 if (Debug.sightStatus)
                 {
-                    Graphics.DrawDiagonalLine(spriteBatch, SightLine);
+                    SightLine.Draw(spriteBatch);
                 }
             }
             Debug.ShowCoords(spriteBatch);
@@ -313,6 +325,7 @@ namespace MonoGamePool1
                 //spriteBatch.Draw(spriteBatch, new Rectangle(origin.X, origin.Y, ));
                 spriteBatch.DrawString(TextBoxFont, Players[x].Name, origin, Color.Black);
             }
+
 
             watch.Stop();
 

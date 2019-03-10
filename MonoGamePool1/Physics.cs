@@ -156,5 +156,11 @@ namespace MonoGamePool1
 
             return new Tuple<float, float>(v1, v2);
         }
+
+        public static Vector2 UnitVector(Vector2 vector)
+        {
+            float length = (float)Pythagoras1(vector.X, vector.Y);
+            return (1 / length) * vector;
+        }
     }
 }

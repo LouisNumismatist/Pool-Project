@@ -18,10 +18,12 @@ namespace MonoGamePool1
             return new DiagonalLine(PoolCue.ID, 5, mousePosition, new Vector2(CueBall.X, CueBall.Y), PoolCue.Colour, false); // - (5 / 2)
         }
 
-        public static DiagonalLine UpdateSightLine(DiagonalLine SightLine, Vector2 mousePosition, Vector2 CueBall)
+        public static DiagonalLine UpdateSightLine(DiagonalLine SightLine, Vector2 mousePosition, Vector2 CueBall, DiagonalLine PoolCue)
         {
-            SightLine.End.X = CueBall.X + 2 * (CueBall.X - mousePosition.X) - 1;
-            SightLine.End.Y = CueBall.Y + 2 * (CueBall.Y - mousePosition.Y) - 1;
+            SightLine.End.X = CueBall.X + 3 * (CueBall.X - mousePosition.X);
+            SightLine.End.Y = CueBall.Y + 3 * (CueBall.Y - mousePosition.Y);
+            //SightLine.End.X = CueBall.X + 2 * (CueBall.X - mousePosition.X) - 1;
+            //SightLine.End.Y = CueBall.Y + 2 * (CueBall.Y - mousePosition.Y) - 1;
             //SightLine.End = new Vector2(CueBall.X + 2 * (CueBall.X - mousePosition.X), CueBall.Y + 2 * (CueBall.Y - mousePosition.Y));
             return new DiagonalLine(SightLine.ID, 5, CueBall, SightLine.End, SightLine.Colour, true);
         }
