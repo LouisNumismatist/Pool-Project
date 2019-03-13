@@ -38,16 +38,20 @@ namespace MonoGamePool1
         public List<Ball> Graveyard = new List<Ball>();
         public List<Button> ButtonList = new List<Button>();
         public List<DiagonalLine> DiagonalLines = new List<DiagonalLine>();
+
         public static DiagonalLine PoolCue;
         public static DiagonalLine SightLine;
+
         public static Button SaveButton;
         public static Button LoadButton;
         public static Button HighScoresButton;
         public static Button ResetButton;
         public static Button PauseButton;
         public static Button DebugButton;
+
         public static RegTextBox TypeBox;
         public static StackTextBox NameBox;
+
         public static NumBox RowsBox;
         public static MiniGraph SpeedTimeGraph;
         public static MiniGraph ForceTimeGraph;
@@ -107,7 +111,7 @@ namespace MonoGamePool1
             ResetButton = new Button(new Vector2(ScreenWidth + 50, 90), "RESET", Color.Blue, font);
             PauseButton = new Button(new Vector2(ScreenWidth + 50, 120), "PAUSE", Color.Blue, font);
             DebugButton = new Button(new Vector2(ScreenWidth + 50, 150),"DEBUG", Color.Blue, font);
-            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 25, 510), TextBoxFont, 10, "Enter:");
+            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 25, 500), TextBoxFont, 10, "Enter:");
             NameBox = new StackTextBox(new Vector2(ScreenWidth + 25, 530), 12, TextBoxFont, "Name:");
 
             SightSelect = new SwitchBox(new Vector2(ScreenWidth + 25, 560), TextBoxFont);
@@ -221,14 +225,16 @@ namespace MonoGamePool1
             {
                 GameStatus.DebugGame();
             }
+            /*
             for (int a = 0; a < BallsList.Count; a++)
             {
                 BallsList[a].Update();
                 BallsList[a] = Collisions.Ball_Wall(BallsList[a], BorderWidth, ScreenWidth, ScreenHeight);
                 for (int b = a + 1; b < BallsList.Count; b++)
                 {
-                    Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
+                    //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New_2(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
                     //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
+                    Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
                     BallsList[a] = TempTuple.Item1;
                     BallsList[b] = TempTuple.Item2;
                 }
@@ -249,7 +255,36 @@ namespace MonoGamePool1
                     //SightLine.End = SightLine.Start;
                 }
                 
+            }*/
+            for (int a = 0; a < BallsList.Count; a++)
+            {
+                Ball ballA = BallsList[a];
+                ballA.Update();
+                ballA = Collisions.Ball_Wall(ballA, BorderWidth, ScreenWidth, ScreenHeight);
+                for (int b = 0; b < BallsList.Count; b++)
+                {
+                    Ball ballB = BallsList[b];
+                    if (a == b) continue;
+
+                    bool collided;
+                    Tuple<Ball, Ball> temp = Collisions.Ball_Ball(ballA, ballB, out collided);
+                    BallsList[a] = temp.Item1;
+                    BallsList[b] = temp.Item2;
+                }
+
+                BallsList = Collisions.Ball_Pocket(BallsList[a], PocketList, BallsList, a, BlankCircle, Graveyard, ScreenWidth);
+
+                if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
+                {
+                    BallsList[a] = Debug.PingBall(BallsList[a]);
+                    PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
+                    if (Debug.sightStatus)
+                    {
+                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
+                    }
+                }
             }
+
             Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
             if (BallsList.Count + Graveyard.Count > 15)
             {
@@ -286,6 +321,7 @@ namespace MonoGamePool1
             DebugButton.Draw(spriteBatch);
 
             TypeBox.Draw(spriteBatch);
+            NameBox.DrawTextBox(spriteBatch);
 
             SightSelect.Draw(spriteBatch);
             if (Debug.sightStatus)

@@ -9,19 +9,24 @@ namespace MonoGamePool1
 {
     public static class Collisions
     {
-        public static Tuple<Ball, Ball> Ball_Ball(Ball a, Ball b)
+        public static Tuple<Ball, Ball> Ball_Ball(Ball a, Ball b, out bool collided)
         {
-            if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) && !a.Collision && !b.Collision)
+            float t;
+            collided = false;
+            if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius, out t) && !a.Collision && !b.Collision)
             {
+                /*
+                collided = true;
+
                 Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2: DISTANCE BETWEEN BALLS IN VECTOR2 FORM
                 float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse : DISTANCE BETWEEN BALLS AS FLOAT
 
-                /*if (Vector2.Distance(a.Center, b.Center) != distanceBetweenBalls) //REPLACE WITH DISTANCE()
+                if (Vector2.Distance(a.Center, b.Center) != distanceBetweenBalls) //REPLACE WITH DISTANCE()
                 {
                     Console.Write(distanceBetweenBalls);
                     Console.Write(" , ");
                     Console.WriteLine(Vector2.Distance(a.Center, b.Center));
-                }*/
+                }
 
                 float overlap = a.Radius + b.Radius - dist;
 
@@ -53,9 +58,10 @@ namespace MonoGamePool1
                     float i = (-(1 - Physics.coefficient_of_restitution_ball) * vn) / totalMass;
                     Vector2 impulse = componentsDist * i;
 
-                    a.Velocity += impulse * (1 / a.Mass);
-                    b.Velocity -= impulse * (1 / b.Mass);
+                    a.Velocity += impulse / a.Mass;
+                    b.Velocity -= impulse / b.Mass;
                 }
+                */
             }
 
             return new Tuple<Ball, Ball>(a, b);
@@ -66,8 +72,9 @@ namespace MonoGamePool1
             //Ball TempA = new Ball(a.ID, new Vector2(a.Center.X - a.Velocity.X, a.Center.Y - a.Velocity.Y), a.Radius, a.Velocity, a.Acceleration, a.Texture);
             //Ball TempB = new Ball(a.ID, new Vector2(b.Center.X - b.Velocity.X, b.Center.Y - b.Velocity.Y), b.Radius, b.Velocity, b.Acceleration, b.Texture);
             float Decrease = 0.9f;
+            float depth;
             //Console.WriteLine("{0}: {1}, {2}: {3}", a.ID, a.Collision, b.ID, b.Collision);
-            if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) && !a.Collision && a.PrevBall != b.ID)
+            if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius, out depth) && !a.Collision && a.PrevBall != b.ID)
             //if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) == true && (General.SameSign(a.Center.X - a.PrevCenter.X, a.Velocity.X) == true || General.SameSign(a.Center.Y - a.PrevCenter.Y, a.Velocity.Y) == true))
             {
                 a.Write();
@@ -159,8 +166,8 @@ namespace MonoGamePool1
                 }
                 //else
                 //{
-
-                if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius) == false)
+                float depth1;
+                if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius, out depth1) == false)
                 {
                     Console.WriteLine("c");
                     Vector2 tempA = a.Velocity;
@@ -298,6 +305,54 @@ namespace MonoGamePool1
 
         }
 
+        public static Tuple<Ball, Ball> Ball_Ball_New_2(Ball a, Ball b, float e)
+        {
+            float collDepth;
+            if (BallsTouching(a.Center, b.Center, a.Radius, b.Radius, out collDepth))
+            {
+                /*
+                float line_of_centres_angle = (float)Math.Atan2(b.Center.Y - a.Center.Y, b.Center.X - a.Center.X);
+
+                float aSpeed = (float)Physics.Pythagoras1(a.Velocity.X, a.Velocity.Y);
+                float bSpeed = (float)Physics.Pythagoras1(b.Velocity.X, b.Velocity.Y);
+
+                float aAngle = (MathHelper.Pi - line_of_centres_angle) - (float)Math.Atan2(a.Velocity.X, a.Velocity.Y);
+                float bAngle = line_of_centres_angle - (float)Math.Atan2(b.Velocity.Y, b.Velocity.X);
+                */
+
+                Vector2 aVelocity = a.Velocity;
+                Vector2 bVelocity = b.Velocity;
+
+                float deltaAngle = (a.Center - b.Center).ToRotation();
+
+                float alpha = Math.Abs(deltaAngle - a.Velocity.ToRotation());
+                float beta = Math.Abs(deltaAngle - (b.Velocity * -1f).ToRotation());
+
+                Vector2 newAVelocity, newBVelocity;
+
+                float mu = a.Velocity.Length();
+                float ro = b.Velocity.Length();
+
+                newAVelocity.X = (mu * (float)Math.Cos(alpha) * (a.Mass - e * b.Mass) - ro * (float)Math.Cos(beta) * (b.Mass + e * b.Mass)) / (a.Mass + b.Mass);
+                newAVelocity.Y = mu * (float)Math.Sin(alpha);
+
+                newBVelocity.X = (mu * (float)Math.Cos(alpha) * (a.Mass + e * a.Mass) + ro * (float)Math.Cos(beta) * (e * a.Mass - b.Mass)) / (a.Mass + b.Mass);
+                newBVelocity.Y = ro * (float)Math.Sin(beta);
+
+                float angleToUseA = a.Velocity == Vector2.Zero ? newAVelocity.ToRotation() : alpha;
+                float angleToUseB = b.Velocity == Vector2.Zero ? newBVelocity.ToRotation() : beta;
+
+                a.Velocity = angleToUseA.ToVector2() * newAVelocity.Length();
+                b.Velocity = angleToUseB.ToVector2() * newBVelocity.Length();
+
+                newAVelocity.Normalize();
+
+                a.Center += collDepth * newAVelocity;
+            }
+
+            return new Tuple<Ball, Ball>(a, b);
+        }
+
         public static Tuple<Ball, Ball> Static_Ball(Ball a, Ball b)
         {
             //a static, b dynamic
@@ -418,16 +473,16 @@ namespace MonoGamePool1
             return BallsList;
         }
 
-        public static bool BallsTouching(Vector2 a, Vector2 b, int Rad1, int Rad2)
+        public static bool BallsTouching(Vector2 a, Vector2 b, float Rad1, float Rad2, out float depth)
         {
-            if ((Vector2.Distance(a, b)) <= (Rad1 + Rad2))
+            depth = 0;
+            float distance = Vector2.Distance(a, b);
+            if (distance <= (Rad1 + Rad2))
             {
+                depth = (Rad1 + Rad2) - distance;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

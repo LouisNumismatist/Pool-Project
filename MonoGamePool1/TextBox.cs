@@ -245,7 +245,8 @@ namespace MonoGamePool1
         public StackTextBox(Vector2 origin, int width, SpriteFont font, string text)
         {
             Origin = origin;
-            Dimensions = new Vector2(width, 20);
+            Dimensions = new Vector2((width + 0.4f) * LetterWidth, LetterHeight);
+
             Chars = new Stack<string>(0, new List<string>());
             Colour = Color.Red;
             Font = font;
@@ -260,7 +261,37 @@ namespace MonoGamePool1
         {
             CheckCaps(com);
 
-
+            if (com == "Space") //Spacebar (32)
+            {
+                Chars.Push(" ");
+                //Chars.Add(" ");
+                /*Pointer += 1;
+                if (LinePos < MaxChars)
+                {
+                    LinePos += 1;
+                }*/
+            }
+            else if (com == "Back") //Backspace (08)
+            {
+                Chars.Pop();
+                //Chars.RemoveAt(Pointer - 1);
+                //MovePointer("Left");
+                /*if (LinePos > 0)
+                {
+                    LinePos -= 1;
+                }*/
+            }
+            else if (NumPadKeys.Contains(com))
+            {
+                Chars.Push(NumPadKeys.IndexOf(com).ToString());
+                //MovePointer("Right");
+            }
+            else if (DKeys.Contains(com))
+            {
+                Chars.Push(DKeys.IndexOf(com).ToString());
+                //MovePointer("Right");
+            }
+            Pressed = Exit(com);
         }
 
         public void UpdateLetters()
