@@ -29,8 +29,11 @@ namespace MonoGamePool1
 
         public void Push(T a)
         {
-            Pointer++;
-            Contents[Pointer] = a;
+            if (GetLength() < Contents.Count())
+            {
+                Pointer++;
+                Contents[Pointer] = a;
+            }
         }
 
         public T Pop()
@@ -59,7 +62,14 @@ namespace MonoGamePool1
 
         public T Peek()
         {
-            return Contents[Pointer];
+            if (Pointer > 0)
+            {
+                return Contents[Pointer];
+            }
+            else
+            {
+                return default(T);
+            }
         }
 
         public List<T> GetContents()

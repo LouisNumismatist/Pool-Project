@@ -267,7 +267,7 @@ namespace MonoGamePool1
                     if (a == b) continue;
 
                     bool collided;
-                    Tuple<Ball, Ball> temp = Collisions.Ball_Ball(ballA, ballB, out collided);
+                    Tuple<Ball, Ball> temp = Collisions.Ball_Ball_New(ballA, ballB, Physics.coefficient_of_restitution_ball);
                     BallsList[a] = temp.Item1;
                     BallsList[b] = temp.Item2;
                 }

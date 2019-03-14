@@ -15,15 +15,15 @@ namespace MonoGamePool1
             collided = false;
             if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius, out t) && !a.Collision && !b.Collision)
             {
-                /*
+                
                 collided = true;
 
                 Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2: DISTANCE BETWEEN BALLS IN VECTOR2 FORM
                 float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse : DISTANCE BETWEEN BALLS AS FLOAT
 
-                if (Vector2.Distance(a.Center, b.Center) != distanceBetweenBalls) //REPLACE WITH DISTANCE()
+                if (Vector2.Distance(a.Center, b.Center) != dist) //REPLACE WITH DISTANCE()
                 {
-                    Console.Write(distanceBetweenBalls);
+                    Console.Write(dist);
                     Console.Write(" , ");
                     Console.WriteLine(Vector2.Distance(a.Center, b.Center));
                 }
@@ -61,7 +61,7 @@ namespace MonoGamePool1
                     a.Velocity += impulse / a.Mass;
                     b.Velocity -= impulse / b.Mass;
                 }
-                */
+                
             }
 
             return new Tuple<Ball, Ball>(a, b);
@@ -241,66 +241,68 @@ namespace MonoGamePool1
             float distance = Vector2.Distance(a.Center, b.Center); //For collision corection - visual
             float overlap = (a.Radius + b.Radius) - distance;
 
-            float verticalComponent = Math.Abs(a.Center.Y - b.Center.Y); //Between balls
-            float horizontalComponent = Math.Abs(a.Center.X - b.Center.X);
-            float angle = (float)Math.Atan2(verticalComponent, horizontalComponent);
-
-            float aAngle = (float)Math.Atan2(a.Velocity.Y, a.Velocity.X); //Angle at which the balls interact with eachother
-            float bAngle = (float)Math.Atan2(b.Velocity.Y, b.Velocity.X);
-
-            float aCompAngle = angle - aAngle;
-            float bCompAngle = MathHelper.ToRadians(180) - angle - bAngle;
-
-            float aSpeedPrev = a.Velocity.Length(); //Scalar speeds of balls
-            float bSpeedPrev = b.Velocity.Length();
-
-            Vector2 aCompPrev = new Vector2(); //Rotated angles of interaction
-            Vector2 bCompPrev = new Vector2();
-
-            aCompPrev.X = (float)(aSpeedPrev * Math.Cos(aCompAngle)); //Convert to rotated components
-            bCompPrev.X = (float)(bSpeedPrev * Math.Cos(bCompAngle));
-
-            aCompPrev.Y = (float)(aSpeedPrev * Math.Sin(aCompAngle));
-            bCompPrev.Y = (float)(bSpeedPrev * Math.Sin(bCompAngle));
-
-            Vector2 aCompPost = new Vector2();
-            Vector2 bCompPost = new Vector2();
-
-            aCompPost.Y = aCompPrev.Y;
-            bCompPost.Y = bCompPrev.Y;
-
-            if (a.ID == 15 || b.ID == 15) //Cue Ball Collision
+            if (BallsTouching(a.Center, b.Center, (int)a.Radius, (int)b.Radius, out overlap) && !a.Collision && !b.Collision)
             {
-                aCompPost.X = (aCompPrev.X * (a.Mass + e * a.Mass) - bCompPrev.X * (e * b.Mass)) / (a.Mass + b.Mass);
-                bCompPost.X = (bCompPrev.X * (e * b.Mass - b.Mass) + aCompPrev.X * (e * a.Mass)) / (a.Mass + b.Mass);
+                float verticalComponent = Math.Abs(a.Center.Y - b.Center.Y); //Between balls
+                float horizontalComponent = Math.Abs(a.Center.X - b.Center.X);
+                float angle = (float)Math.Atan2(verticalComponent, horizontalComponent);
+
+                float aAngle = (float)Math.Atan2(a.Velocity.Y, a.Velocity.X); //Angle at which the balls interact with eachother
+                float bAngle = (float)Math.Atan2(b.Velocity.Y, b.Velocity.X);
+
+                float aCompAngle = angle - aAngle;
+                float bCompAngle = MathHelper.Pi - angle - bAngle;
+
+                float aSpeedPrev = a.Velocity.Length(); //Scalar speeds of balls
+                float bSpeedPrev = b.Velocity.Length();
+
+                Vector2 aCompPrev = new Vector2(); //Rotated angles of interaction
+                Vector2 bCompPrev = new Vector2();
+
+                aCompPrev.X = (float)(aSpeedPrev * Math.Cos(aCompAngle)); //Convert to rotated components
+                bCompPrev.X = (float)(bSpeedPrev * Math.Cos(bCompAngle));
+
+                aCompPrev.Y = (float)(aSpeedPrev * Math.Sin(aCompAngle));
+                bCompPrev.Y = (float)(bSpeedPrev * Math.Sin(bCompAngle));
+
+                Vector2 aCompPost = new Vector2();
+                Vector2 bCompPost = new Vector2();
+
+                aCompPost.Y = aCompPrev.Y;
+                bCompPost.Y = bCompPrev.Y;
+
+                if (a.ID == 15 || b.ID == 15) //Cue Ball Collision
+                {
+                    aCompPost.X = (aCompPrev.X * (a.Mass + e * a.Mass) - bCompPrev.X * (e * b.Mass)) / (a.Mass + b.Mass);
+                    bCompPost.X = (bCompPrev.X * (e * b.Mass - b.Mass) + aCompPrev.X * (e * a.Mass)) / (a.Mass + b.Mass);
+                }
+                else //Two normal Balls colliding
+                {
+                    aCompPost.X = (aCompPrev.X * (1 + e) + bCompPrev.X * (e - 1)) / 2;
+                    bCompPost.X = (aCompPrev.X * (1 - e) - bCompPrev.X * (e + 1)) / 2;
+                }
+
+                float aAnglePost = (float)Math.Atan2(aCompPost.Y, aCompPost.X);
+                float bAnglePost = (float)Math.Atan2(bCompPost.Y, bCompPost.X);
+
+                float aSpeedPost = aCompPost.Length();
+                float bSpeedPost = bCompPost.Length();
+
+                float aCompAnglePost = angle - aAnglePost;
+                float bCompAnglePost = MathHelper.ToRadians(180) - angle - bAnglePost;
+
+                Vector2 aFinalComp = new Vector2();
+                Vector2 bFinalComp = new Vector2();
+
+                aFinalComp.X = (float)(aSpeedPost * Math.Cos(aCompAnglePost)); //Convert to rotated components
+                bFinalComp.X = (float)(bSpeedPost * Math.Cos(bCompAnglePost));
+
+                aFinalComp.Y = (float)(aSpeedPost * Math.Sin(aCompAnglePost));
+                bFinalComp.Y = (float)(bSpeedPost * Math.Sin(bCompAnglePost));
+
+                a.Velocity = aFinalComp;
+                b.Velocity = bFinalComp;
             }
-            else //Two normal Balls colliding
-            {
-                aCompPost.X = (aCompPrev.X * (1 + e) + bCompPrev.X * (e - 1)) / 2;
-                bCompPost.X = (aCompPrev.X * (1 - e) - bCompPrev.X * (e + 1)) / 2;
-            }
-
-            float aAnglePost = (float)Math.Atan2(aCompPost.Y, aCompPost.X);
-            float bAnglePost = (float)Math.Atan2(bCompPost.Y, bCompPost.X);
-
-            float aSpeedPost = aCompPost.Length();
-            float bSpeedPost = bCompPost.Length();
-
-            float aCompAnglePost = angle - aAnglePost;
-            float bCompAnglePost = MathHelper.ToRadians(180) - angle - bAnglePost;
-
-            Vector2 aFinalComp = new Vector2();
-            Vector2 bFinalComp = new Vector2();
-
-            aFinalComp.X = (float)(aSpeedPost * Math.Cos(aCompAnglePost)); //Convert to rotated components
-            bFinalComp.X = (float)(bSpeedPost * Math.Cos(bCompAnglePost));
-
-            aFinalComp.Y = (float)(aSpeedPost * Math.Sin(aCompAnglePost));
-            bFinalComp.Y = (float)(bSpeedPost * Math.Sin(bCompAnglePost));
-
-            a.Velocity = aFinalComp;
-            b.Velocity = bFinalComp;
-
             return new Tuple<Ball, Ball>(a, b);
 
         }
