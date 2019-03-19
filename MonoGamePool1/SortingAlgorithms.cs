@@ -21,14 +21,24 @@ namespace MonoGamePool1
             return MergeMain(arr, 0, arr.Count() - 1);
         }
 
+        public static T[] MergeGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //minor
+        {
+            return MergeMainGeneric(arr, comparer, 0, arr.Count() - 1);
+        }
+
         public static int[] Quick(IEnumerable<int> arr) //minor
         {
             return QuickMain(arr, 0, arr.Count() - 1);
         }
 
-        public static int[] MergeMain(IEnumerable<int> arr, int left, int right) //DONE
+        public static T[] QuickGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //minor
         {
-            var nums = arr.ToArray();
+            return QuickMainGeneric(arr, comparer, 0, arr.Count() - 1);
+        }
+
+        private static int[] MergeMain(IEnumerable<int> arr, int left, int right) //DONE
+        {
+            int[] nums = arr.ToArray();
 
             int mid = (int)((right - left) / 2 + left);
             if (right - left > 0)
@@ -68,6 +78,51 @@ namespace MonoGamePool1
             }
 
             return nums;
+        }
+
+        private static T[] MergeMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int left, int right) //DONE
+        {
+            T[] array = arr.ToArray();
+
+            int mid = ((right - left) / 2 + left);
+            if (right - left > 0)
+            {
+                array = MergeMainGeneric(array, comparer, left, mid);
+                array = MergeMainGeneric(array, comparer, mid + 1, right);
+                int a = left;
+                int b = mid + 1;
+                List<T> temp = new List<T>();
+                while (a <= mid && b <= right)
+                {
+                    int comp = comparer.Compare(array[a], array[b]);
+                    if (comp == -1)
+                    {
+                        temp.Add(array[a]);
+                        a += 1;
+                    }
+                    else
+                    {
+                        temp.Add(array[b]);
+                        b += 1;
+                    }
+                }
+                while (a <= mid)
+                {
+                    temp.Add(array[a]);
+                    a += 1;
+                }
+                while (b <= right)
+                {
+                    temp.Add(array[b]);
+                    b += 1;
+                }
+                for (int x = 0; x < temp.Count(); x++)
+                {
+                    array[left + x] = temp[x];
+                }
+            }
+
+            return array;
         }
 
         public static int[] InsertionMain(IEnumerable<int> arr, int left, int right) //DONE
@@ -149,6 +204,67 @@ namespace MonoGamePool1
             return nums;
         }
 
+        private static T[] QuickMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int OuterLeft, int OuterRight) //DONE
+        {
+            T[] array = arr.ToArray();
+            //var array = arr.ToArray();
+            int left = OuterLeft;
+            int right = OuterRight;
+            int pivot = left;
+
+            int comp = comparer.Compare(array[pivot], array[right]);
+
+            while (left < right)
+            {
+                while (pivot == left)
+                {
+                    comp = comparer.Compare(array[pivot], array[right]);
+                    if (comp == -1)
+                    {
+                        right -= 1;
+                    }
+                    else if (comp == 1)
+                    {
+                        T temp = array[pivot];
+                        array[pivot] = array[right];
+                        array[right] = temp;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                while (pivot == right)
+                {
+                    comp = comparer.Compare(array[pivot], array[left]);
+                    if (comp == 1)
+                    {
+                        left += 1;
+                    }
+                    else if (comp == -1)
+                    {
+                        T temp = array[pivot];
+                        array[pivot] = array[left];
+                        array[left] = temp;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            if (right > OuterLeft)
+            {
+                array = QuickMainGeneric(array, comparer, OuterLeft, right - 1);
+            }
+            if (right + 1 < OuterRight)
+            {
+                array = QuickMainGeneric(array, comparer, right + 1, OuterRight);
+            }
+
+            return array;
+        }
+
         public static int[] Bubble(IEnumerable<int> arr) //DONE
         {
             var nums = arr.ToArray();
@@ -203,6 +319,48 @@ namespace MonoGamePool1
                 right -= 1;
             }
             return nums;
+        }
+
+        public static T[] CocktailShakerGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //DONE
+        {
+            T[] array = arr.ToArray();
+            //var array = arr.ToArray();
+
+            int left = 0;
+            int right = array.Count() - 1;
+
+            int comp;
+
+            while (left < right)
+            {
+                for (int x = left; x < right; x++)
+                {
+                    comp = comparer.Compare(array[x], array[x + 1]);
+                    if (comp == 1)
+                    {
+                        T temp = array[x];
+                        array[x] = array[x + 1];
+                        array[x + 1] = temp;
+                    }
+                }
+                left += 1;
+                if (left == right)
+                {
+                    break;
+                }
+                for (int x = right; x >= left; x--)
+                {
+                    comp = comparer.Compare(array[x], array[x - 1]);
+                    if (comp == -1)
+                    {
+                        T temp = array[x];
+                        array[x] = array[x - 1];
+                        array[x - 1] = temp;
+                    }
+                }
+                right -= 1;
+            }
+            return array;
         }
 
         public static int[] Selection(IEnumerable<int> arr) //DONE

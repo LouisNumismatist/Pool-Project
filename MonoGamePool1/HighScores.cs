@@ -25,16 +25,16 @@ namespace MonoGamePool1
 
         private void HighScores_Load(object sender, EventArgs e)
         {
-            HighScoresSorting.GetHighScores();
-            WriteLists(ref listBox1, ref listBox2, ref listBox3);
+            HighScoresList = HighScoresSorting.GetHighScores(); //josh tm
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
             //HighScoresList = HighScoresSorting.IdentifyCommand(0, true);
         }
 
         public void WriteLists(ref ListBox listBox1, ref ListBox listBox2, ref ListBox listBox3)
         {
-            listBox1.ClearSelected();
-            listBox2.ClearSelected();
-            listBox3.ClearSelected();
+            listBox1.Items.Clear();
+            listBox2.Items.Clear();
+            listBox3.Items.Clear();
 
             foreach(HighScore hs in HighScoresList)
             {
@@ -79,94 +79,62 @@ namespace MonoGamePool1
 
         }
 
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void UsernameBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void Button1_Click(object sender, EventArgs e) //Username ASC
-        {
-            WriteLists(ref listBox1, ref listBox2, ref listBox3);
-            if (lastSort == 0)
-            {
-                if (!asc)
-                {
-                    HighScoresSorting.ReverseList(ref HighScoresList);
-                }
-            }
-            else
-            {
-                //Sort HighScores by Username
-            }
-            HighScoresSorting.IdentifyCommand(0, true, HighScoresList);
-        }
-
-        private void Button2_Click(object sender, EventArgs e) //Username DESC
-        {
-            if (lastSort == 0)
-            {
-                if (asc)
-                {
-                    HighScoresSorting.ReverseList(ref HighScoresList);
-                }
-            }
-            else
-            {
-                //Sort HighScores by Username
-                HighScoresSorting.ReverseList(ref HighScoresList);
-            }
-            HighScoresSorting.IdentifyCommand(0, false, HighScoresList);
-        }
-
-        private void Button3_Click(object sender, EventArgs e) //Balls Potted ASC
-        {
-            if (lastSort == 1)
-            {
-                if (!asc)
-                {
-                    HighScoresSorting.ReverseList(ref HighScoresList);
-                }
-            }
-            else
-            {
-                //Sort HighScores by BallsPotted
-            }
-            HighScoresSorting.IdentifyCommand(1, true, HighScoresList);
-        }
-
-        private void Button5_Click(object sender, EventArgs e) //Balls Potted DESC
-        {
-            if (lastSort == 1)
-            {
-                if (asc)
-                {
-                    HighScoresSorting.ReverseList(ref HighScoresList);
-                }
-            }
-            else
-            {
-                //Sort HighScores by BallsPotted
-                HighScoresSorting.ReverseList(ref HighScoresList);
-            }
-            HighScoresSorting.IdentifyCommand(2, true, HighScoresList);
-        }
-
-        private void Button4_Click(object sender, EventArgs e) //Time Taken ASC
-        {
-            
-            HighScoresSorting.IdentifyCommand(1, false, HighScoresList);
-        }
-
-        
-
-        private void Button6_Click(object sender, EventArgs e) //Time Taken DESC
-        {
-            HighScoresSorting.IdentifyCommand(2, false, HighScoresList);
-        }
-
-        private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
+        private void BallsPottedBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
+
+        private void TimeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void UsernameASC_Click(object sender, EventArgs e) //Username ASC
+        {
+            //sort by the usernanme
+            //use OrderByDescending for descending
+            HighScoresList = Algorithms.MergeGeneric(HighScoresList, new HighScoreNameComparer()).ToList();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }
+
+        private void UsernameDESC_Click(object sender, EventArgs e) //Username DESC
+        {
+            HighScoresList = Algorithms.MergeGeneric(HighScoresList, new HighScoreNameComparer()).ToList();
+            HighScoresList.Reverse();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }
+
+        private void BallsPottedASC_Click(object sender, EventArgs e) //Balls Potted ASC
+        {
+            HighScoresList = Algorithms.QuickGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }
+
+        private void BallsPottedDESC_Click(object sender, EventArgs e) //Balls Potted DESC
+        {
+            HighScoresList = Algorithms.QuickGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
+            HighScoresList.Reverse();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }
+
+        private void TimeASC_Click(object sender, EventArgs e) //Time Taken ASC
+        {
+            HighScoresList = Algorithms.CocktailShakerGeneric(HighScoresList, new HighScoreTimeComparer()).ToList();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }        
+
+        private void TimeDESC_Click(object sender, EventArgs e) //Time Taken DESC
+        {
+            HighScoresList = Algorithms.CocktailShakerGeneric(HighScoresList, new HighScoreTimeComparer()).ToList();
+            HighScoresList.Reverse();
+            WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
+        }
+
     }
 }

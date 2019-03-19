@@ -7,6 +7,37 @@ using System.IO;
 
 namespace MonoGamePool1
 {
+    public class HighScoreNameComparer : IComparer<HighScore>
+    {
+        public int Compare(HighScore h1, HighScore h2)
+        {
+            return StringComparer.CurrentCulture.Compare(h1.UserName, h2.UserName);
+        }
+    }
+
+    public class HighScoreBallsPottedComparer : IComparer<HighScore>
+    {
+        public int Compare(HighScore h1, HighScore h2)
+        {
+            if (h1.BallsPotted < h2.BallsPotted)
+            {
+                return -1;
+            }
+            else if (h1.BallsPotted > h2.BallsPotted)
+            {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    public class HighScoreTimeComparer : IComparer<HighScore>
+    {
+        public int Compare(HighScore h1, HighScore h2)
+        {
+            return StringComparer.CurrentCulture.Compare(h1.Time, h2.Time);
+        }
+    }
 
     public class HighScore
     {
