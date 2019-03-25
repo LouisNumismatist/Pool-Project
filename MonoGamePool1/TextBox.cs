@@ -19,6 +19,7 @@ namespace MonoGamePool1
         public static int BlinkTimer = 60;
         public int MaxChars;
         public string TempText;
+        public string Output;
 
         public static bool CapsLock = false;
         public static bool TempCapsLock = false;
@@ -100,6 +101,7 @@ namespace MonoGamePool1
             Border = 2;
             LinePos = 0;
             TempText = temptext;
+            Output = "";
         }
 
         public void IdentifyCommand(string com)
@@ -255,7 +257,13 @@ namespace MonoGamePool1
             MaxChars = width;
             Border = 2;
             TempText = text;
+            Output = "";
         }
+
+        /*public bool GetPressed()
+        {
+            return Pressed;
+        }*/
 
         public void IdentifyCommand(string com)
         {
@@ -290,6 +298,13 @@ namespace MonoGamePool1
             {
                 Chars.Push(DKeys.IndexOf(com).ToString());
                 //MovePointer("Right");
+            }
+            else if (com == "Enter")
+            {
+                for (int c = 0; c < Chars.GetLength(); c++)
+                {
+                    Output.Insert(0, Chars.Pop());
+                }
             }
             Pressed = Exit(com);
         }

@@ -74,7 +74,6 @@ namespace MonoGamePool1
                 }
             }
         }
-
         public static void InitialiseButtonList(ref List<Button> ButtonList)
         {
 

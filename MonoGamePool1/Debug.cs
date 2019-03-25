@@ -18,6 +18,7 @@ namespace MonoGamePool1
         public static int rows = 5;
         public static int ballBorderWidth = 2;
         public static bool speedTest = false;
+        public static bool BoundingBoxes = false;
         
         public static void NumberBalls(Ball a, SpriteBatch spriteBatch)
         {
@@ -109,5 +110,26 @@ namespace MonoGamePool1
                 return false;
             }
         }*/
+
+        public static void DrawBoundingBoxes(SpriteBatch spriteBatch, List<Ball> ballsList, Texture2D texture)
+        {
+            if (BoundingBoxes)
+            {
+                foreach (Ball ball in ballsList)
+                {
+                    spriteBatch.Draw(texture, new Rectangle((int)(ball.Center.X - ball.Radius), (int)(ball.Center.Y - ball.Radius), (int)ball.Radius * 2, 1), Color.Black); //Top
+                    spriteBatch.Draw(texture, new Rectangle((int)(ball.Center.X - ball.Radius), (int)(ball.Center.Y - ball.Radius), 1, (int)ball.Radius * 2), Color.Black); //Left
+                    spriteBatch.Draw(texture, new Rectangle((int)(ball.Center.X + ball.Radius), (int)(ball.Center.Y - ball.Radius), 1, (int)ball.Radius * 2), Color.Black); //Right
+                    spriteBatch.Draw(texture, new Rectangle((int)(ball.Center.X - ball.Radius), (int)(ball.Center.Y + ball.Radius), (int)ball.Radius * 2 + 1, 1), Color.Black); //Bottom
+
+                    if (ball.Velocity.Length() > 0)
+                    {
+                        Vector2 unitVector = Physics.UnitVector(ball.Velocity) * ball.Radius * 2;
+                        new DiagonalLine(0, 1, ball.Center, new Vector2(ball.Center.X + unitVector.X, ball.Center.Y + unitVector.Y), Color.White, false).Draw(spriteBatch);
+                    }
+                }
+            }
+            
+        }
     }
 }

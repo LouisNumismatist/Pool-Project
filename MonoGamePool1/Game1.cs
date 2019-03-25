@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics; //For Stopwatch
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,7 @@ namespace MonoGamePool1
         public static MiniGraph SpeedTimeGraph;
         public static MiniGraph ForceTimeGraph;
         public static MiniGraph EkTimeGraph;
+        public static MiniGraph CentripetalForceGraph;
         public List<Player> Players = new List<Player>();
         public static string Player1Name = "PlayerA";
         public static string Player2Name = "PlayerB";
@@ -77,7 +79,7 @@ namespace MonoGamePool1
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferHeight = ScreenHeight + 100,
-                PreferredBackBufferWidth = ScreenWidth + 200
+                PreferredBackBufferWidth = ScreenWidth + 400
             };
             Content.RootDirectory = "Content";
 
@@ -105,30 +107,30 @@ namespace MonoGamePool1
             SightLine = new DiagonalLine(0, 5, new Vector2(174, 274), new Vector2(274, 274), Color.Sienna, false); // - (5 / 2)
             string tempString = FileSaving.ObjectToString(BallsList[0]);
             //Ball tempBall = FileSaving.StringToObject(tempString, BallsDict);
-            SaveButton = new Button(new Vector2(ScreenWidth + 50, 30), "SAVE", Color.Blue, font);
-            LoadButton = new Button(new Vector2(ScreenWidth + 50 + 66, 30), "LOAD", Color.Blue, font);
-            HighScoresButton = new Button(new Vector2(ScreenWidth + 50, 60), "HIGHSCORES", Color.Blue, font); //Same row
-            ResetButton = new Button(new Vector2(ScreenWidth + 50, 90), "RESET", Color.Blue, font);
-            PauseButton = new Button(new Vector2(ScreenWidth + 50, 120), "PAUSE", Color.Blue, font);
-            DebugButton = new Button(new Vector2(ScreenWidth + 50, 150),"DEBUG", Color.Blue, font);
-            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 25, 500), TextBoxFont, 10, "Enter:");
-            NameBox = new StackTextBox(new Vector2(ScreenWidth + 25, 530), 12, TextBoxFont, "Name:");
+            SaveButton = new Button(new Vector2(ScreenWidth + 230, 30), "SAVE", Color.Blue, font);
+            LoadButton = new Button(new Vector2(ScreenWidth + 230 + 66, 30), "LOAD", Color.Blue, font);
+            HighScoresButton = new Button(new Vector2(ScreenWidth + 230, 60), "HIGHSCORES", Color.Blue, font); //Same row
+            ResetButton = new Button(new Vector2(ScreenWidth + 230, 90), "RESET", Color.Blue, font);
+            PauseButton = new Button(new Vector2(ScreenWidth + 230, 120), "PAUSE", Color.Blue, font);
+            DebugButton = new Button(new Vector2(ScreenWidth + 230, 150),"DEBUG", Color.Blue, font);
 
-            SightSelect = new SwitchBox(new Vector2(ScreenWidth + 25, 560), TextBoxFont);
+            RowsBox = new NumBox(new Vector2(ScreenWidth + 230, 180), TextBoxFont, 14);
 
-            RowsBox = new NumBox(new Vector2(ScreenWidth + 50, 180), TextBoxFont, 14);
+            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 235, 210), TextBoxFont, 10, "Enter:");
+            NameBox = new StackTextBox(new Vector2(ScreenWidth + 235, 240), 12, TextBoxFont, "Name:");
 
-            SpeedTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 210), 175, 100, "Speed-Time");
-            ForceTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 350), 175, 100, "Force-Time");
-            EkTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 350), 175, 100, "Kinetic Energy-Time");
+            SightSelect = new SwitchBox(new Vector2(ScreenWidth + 235, 270), TextBoxFont);
+            
+            SpeedTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 30), 175, 100, "Speed-Time");
+            ForceTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 170), 175, 100, "Force-Time");
+            EkTimeGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 310), 175, 100, "Kinetic Energy-Time");
+            CentripetalForceGraph = new MiniGraph(new Vector2(ScreenWidth + 15, 450), 175, 100, "Centripetal Force-Time");
 
             Players.Add(new Player(1, Player1Name));
             Players.Add(new Player(2, Player2Name));
 
             System.Speech.Synthesis.SpeechSynthesizer speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
 
-            
-            
             //speechSynthesizer.Speak("Welcome to eight ball pool. Please enter your names in the text box below");
             //speechSynthesizer.Speak("Yoyo. Play the pool, yoyo.");
         }
@@ -185,8 +187,17 @@ namespace MonoGamePool1
             PauseButton.Update(Input.mousePosition);
             DebugButton.Update(Input.mousePosition);
             RowsBox.Update();
+
             TypeBox.UpdatePressed();
+            if (TypeBox.Pressed)
+            {
+                NameBox.Pressed = false;
+            }
             NameBox.UpdatePressed();
+            if (NameBox.Pressed)
+            {
+                TypeBox.Pressed = false;
+            }
 
             SightSelect.Update();
             if ((SightSelect.State && !Debug.sightStatus) || (!SightSelect.State && Debug.sightStatus))
@@ -198,14 +209,15 @@ namespace MonoGamePool1
             {
                 TypeBox.UpdateLetters();
             }
+            string CompUsername = Environment.UserName;
             if (SaveButton.Pressed && Input.LeftMouseJustClicked())
             {
-                GameStatus.SaveGame(BallsList);
+                string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\";
+                GameStatus.SaveGame(BallsList, path);
             }
             if (LoadButton.Pressed && Input.LeftMouseJustClicked())
             {
-                //PCName = Enviroment.UserName
-                string path = @"C:\Users\Louis\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\2018-12-18-12-57-59";
+                string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\2019-3-20-10-8-40";
                 BallsList = GameStatus.LoadGame(path);
             }
             if (HighScoresButton.Pressed && Input.LeftMouseJustClicked())
@@ -215,7 +227,7 @@ namespace MonoGamePool1
             }
             if (ResetButton.Pressed && Input.LeftMouseJustClicked())
             {
-                GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, ForceTimeGraph, EkTimeGraph, BlankCircle, BlankBox);
+                GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, ForceTimeGraph, EkTimeGraph, CentripetalForceGraph, BlankCircle, BlankBox);
             }
             if (PauseButton.Pressed && Input.LeftMouseJustClicked())
             {
@@ -225,8 +237,8 @@ namespace MonoGamePool1
             {
                 GameStatus.DebugGame();
             }
-            /*
-            for (int a = 0; a < BallsList.Count; a++)
+            
+            /*for (int a = 0; a < BallsList.Count; a++)
             {
                 BallsList[a].Update();
                 BallsList[a] = Collisions.Ball_Wall(BallsList[a], BorderWidth, ScreenWidth, ScreenHeight);
@@ -289,9 +301,11 @@ namespace MonoGamePool1
             Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
             if (BallsList.Count + Graveyard.Count > 15)
             {
-                SpeedTimeGraph.Update((float)Physics.Pythagoras1(BallsList[BallsList.Count - 1].Velocity.X, BallsList[BallsList.Count - 1].Velocity.Y));
-                ForceTimeGraph.Update((float)Physics.NewtonAcc(BallsList[BallsList.Count - 1]));
-                EkTimeGraph.Update((float)Physics.KineticEnergy(BallsList[BallsList.Count - 1].Mass, (float)Physics.Pythagoras1(BallsList[BallsList.Count - 1].Velocity.X, BallsList[BallsList.Count - 1].Velocity.Y)));
+                Ball ball = BallsList[BallsList.Count - 1];
+                SpeedTimeGraph.Update((float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y));
+                ForceTimeGraph.Update((float)Physics.NewtonAcc(ball));
+                EkTimeGraph.Update((float)Physics.KineticEnergy(ball.Mass, (float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y)));
+                CentripetalForceGraph.Update(Physics.CentripetalForce(ball.Velocity, ball.Radius, ball.Mass));
             }
             base.Update(gameTime);
         }
@@ -338,12 +352,17 @@ namespace MonoGamePool1
             spriteBatch.DrawString(RowsBox.Font, "Rows", new Vector2(RowsBox.Origin.X + RowsBox.Dimensions.X + 15, RowsBox.Origin.Y), Color.Black);
 
             SpeedTimeGraph.Draw(spriteBatch);
-            //ForceTimeGraph.Draw(spriteBatch);
+            ForceTimeGraph.Draw(spriteBatch);
             EkTimeGraph.Draw(spriteBatch);
+            CentripetalForceGraph.Draw(spriteBatch);
 
             if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
             {
-                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.Pointer);
+                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.Pointer);               
+            }
+            if (NameBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
+            {
+                NameBox.DrawBlinkingKeyLine(spriteBatch, NameBox.Chars.GetLength());                
             }
             //Graphics.DrawCushionDiagonals(spriteBatch, DiagonalLines, BlankBox);
             if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0)
@@ -355,6 +374,7 @@ namespace MonoGamePool1
                 }
             }
             Debug.ShowCoords(spriteBatch);
+            Debug.DrawBoundingBoxes(spriteBatch, BallsList, BlankBox);
 
             for (int x = 0; x < Players.Count; x++)
             {

@@ -87,7 +87,7 @@ namespace MonoGamePool1
         public static void DrawScoreBox(SpriteBatch spriteBatch, List<Ball> Graveyard)
         {
             spriteBatch.Draw(BlankBox, new Rectangle(0, ScreenHeight, ScreenWidth, 100), Color.DarkGray);
-            spriteBatch.Draw(BlankBox, new Rectangle(ScreenWidth, 0, 200, ScreenHeight + 100), Color.DarkGray);
+            spriteBatch.Draw(BlankBox, new Rectangle(ScreenWidth, 0, 400, ScreenHeight + 100), Color.DarkGray);
             DrawBalls(spriteBatch, Graveyard);
         }
 
@@ -339,5 +339,7 @@ namespace MonoGamePool1
             spriteBatch.DrawString(font, name1, pos1, Color.Black);
             spriteBatch.DrawString(font, name2, pos2, Color.Black);
         }*/
+
+        
     }
 }

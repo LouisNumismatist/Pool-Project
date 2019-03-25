@@ -14,7 +14,7 @@ namespace MonoGamePool1
         public const float coefficient_sliding_friction_cloth = 0.4f; //0.15-0.4 - IGNORE: FOR SPIN
         public const float coefficient_of_rolling_resistance_cloth = 0.015f; //0.005-0.015 - FRICTION ON TABLE
 
-        //FOR INSTANTANOIOUS ACTIONS
+        //FOR INSTANTANIOUS ACTIONS
         public const float coefficient_of_restitution_ball = 0.98f; // 0.92-0.98
         public const float coefficient_of_restitution_rail = 0.9f; //0.6-0.9
         public const float coefficient_of_restitution_table = 0.5f; //IGNORE: BOUNCING BALL
@@ -161,6 +161,38 @@ namespace MonoGamePool1
         {
             float length = (float)Pythagoras1(vector.X, vector.Y);
             return (1 / length) * vector;
+        }
+
+        //Circular Motion Equations
+
+        public static float SphereCircumference(float radius)
+        {
+            return (float)Math.PI * radius * 2;
+        }
+
+        public static float Frequency(float radius, Vector2 velocity)
+        {
+            float C = SphereCircumference(radius);
+            float S = velocity.Length();
+            float T = C / S;
+            return 1 / T;
+        }
+
+        public static float AngularSpeed(Vector2 velocity, float radius)
+        {
+            float S = velocity.Length();
+            return S / radius;
+        }
+
+        public static float CentripetalAcceleration(Vector2 velocity, float radius)
+        {
+            float angularSpeed = AngularSpeed(velocity, radius);
+            return (float)Math.Pow(angularSpeed, 2) * radius;
+        }
+
+        public static float CentripetalForce(Vector2 velocity, float radius, float mass)
+        {
+            return mass * CentripetalAcceleration(velocity, radius);
         }
     }
 }
