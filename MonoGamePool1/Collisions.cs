@@ -399,7 +399,7 @@ namespace MonoGamePool1
 
         public static Ball Ball_Wall(Ball a, int BorderWidth, int ScreenWidth, int ScreenHeight)
         {
-            float Decrease = 0.95f;
+            float Decrease = Physics.coefficient_of_restitution_rail;
             float Increase = 1 - Decrease;
             bool leftWallCollision = (a.Center.X - a.Radius <= BorderWidth && a.Velocity.X < 0);
             bool rightWallCollision = ((a.Center.X + a.Radius >= ScreenWidth - BorderWidth) && a.Velocity.X > 0);

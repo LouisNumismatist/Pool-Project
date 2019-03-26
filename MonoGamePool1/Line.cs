@@ -44,6 +44,8 @@ namespace MonoGamePool1
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            Graphics.DrawLine(spriteBatch, Start, End, Thickness, Colour, Dotted);
+            /*
             float m = Physics.Gradient(Start, End);
             int count = 0;
             if (m != double.PositiveInfinity && m != double.NegativeInfinity)
@@ -65,7 +67,6 @@ namespace MonoGamePool1
                 }
                 if (Start.Y < End.Y)
                 {
-
                     end -= 1;
                 }
                 for (int x = start; x <= end + 1; x++)
@@ -79,8 +80,10 @@ namespace MonoGamePool1
                     prevX = prevTuple.Item2;
                 }
             }
+            */
         }
 
+        /*
         public Tuple<int, int> InnerDraw(SpriteBatch spriteBatch, int y, int x, float m, float c, int prevY, int newY, int prevX, int newX, int count)
         {
             if (!Dotted || x % 5 == 0)
@@ -101,7 +104,7 @@ namespace MonoGamePool1
                     }
                     else //Top or bottom sections
                     {
-                        spriteBatch.Draw(Texture, new Rectangle(x, prevY, Thickness, newY), Colour);
+                        spriteBatch.Draw(Texture, new Rectangle(prevX, y, newX, Thickness), Colour);
                     }
 
                 }
@@ -118,6 +121,7 @@ namespace MonoGamePool1
             }
             return new Tuple<int, int>(prevY, prevX);
         }
+        */
 
         /*public static DiagonalLine InitialiseDiagonalLine(Color color)
         {

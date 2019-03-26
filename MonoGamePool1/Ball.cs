@@ -87,7 +87,8 @@ namespace MonoGamePool1
                 Center += Velocity;
                 //Graphics.WriteBall(a);
             }
-            Velocity *= 0.992f;
+            Velocity *= 1 - Physics.coefficient_of_rolling_resistance_cloth;
+            //Velocity *= 0.992f;
             //return this;
             //return a;
             //a.Velocity = Vector2.Add(a.Velocity, Vector2.Multiply(a.Velocity, a.Acceleration));

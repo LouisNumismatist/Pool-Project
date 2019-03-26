@@ -38,46 +38,46 @@ namespace MonoGamePool1
 
         private static int[] MergeMain(IEnumerable<int> arr, int left, int right) //DONE
         {
-            int[] nums = arr.ToArray();
+            int[] array = arr.ToArray();
 
             int mid = (int)((right - left) / 2 + left);
             if (right - left > 0)
             {
-                nums = MergeMain(nums, left, mid);
-                nums = MergeMain(nums, mid + 1, right);
+                array = MergeMain(array, left, mid);
+                array = MergeMain(array, mid + 1, right);
                 int a = left;
                 int b = mid + 1;
                 List<int> temp = new List<int>();
                 while (a <= mid && b <= right)
                 {
-                    if (nums[a] < nums[b])
+                    if (array[a] < array[b])
                     {
-                        temp.Add(nums[a]);
+                        temp.Add(array[a]);
                         a += 1;
                     }
                     else
                     {
-                        temp.Add(nums[b]);
+                        temp.Add(array[b]);
                         b += 1;
                     }
                 }
                 while (a <= mid)
                 {
-                    temp.Add(nums[a]);
+                    temp.Add(array[a]);
                     a += 1;
                 }
                 while (b <= right)
                 {
-                    temp.Add(nums[b]);
+                    temp.Add(array[b]);
                     b += 1;
                 }
                 for (int x = 0; x < temp.Count(); x++)
                 {
-                    nums[left + x] = temp[x];
+                    array[left + x] = temp[x];
                 }
             }
 
-            return nums;
+            return array;
         }
 
         private static T[] MergeMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int left, int right) //DONE
@@ -127,17 +127,17 @@ namespace MonoGamePool1
 
         public static int[] InsertionMain(IEnumerable<int> arr, int left, int right) //DONE
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
 
             for (int x = left; x < right; x++)
             {
                 for (int y = x; y >= left; y--)
                 {
-                    if (nums[y] < nums[y - 1])
+                    if (array[y] < array[y - 1])
                     {
-                        int temp = nums[y - 1];
-                        nums[y - 1] = nums[y];
-                        nums[y] = temp;
+                        int temp = array[y - 1];
+                        array[y - 1] = array[y];
+                        array[y] = temp;
                     }
                     else
                     {
@@ -145,12 +145,12 @@ namespace MonoGamePool1
                     }
                 }
             }
-            return nums;
+            return array;
         }
 
         public static int[] QuickMain(IEnumerable<int> arr, int OuterLeft, int OuterRight) //DONE
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
             int left = OuterLeft;
             int right = OuterRight;
             int pivot = left;
@@ -159,15 +159,15 @@ namespace MonoGamePool1
             {
                 while (pivot == left)
                 {
-                    if (nums[pivot] < nums[right])
+                    if (array[pivot] < array[right])
                     {
                         right -= 1;
                     }
-                    else if (nums[pivot] > nums[right])
+                    else if (array[pivot] > array[right])
                     {
-                        int temp = nums[pivot];
-                        nums[pivot] = nums[right];
-                        nums[right] = temp;
+                        int temp = array[pivot];
+                        array[pivot] = array[right];
+                        array[right] = temp;
                     }
                     else
                     {
@@ -176,15 +176,15 @@ namespace MonoGamePool1
                 }
                 while (pivot == right)
                 {
-                    if (nums[pivot] > nums[left])
+                    if (array[pivot] > array[left])
                     {
                         left += 1;
                     }
-                    else if (nums[pivot] < nums[left])
+                    else if (array[pivot] < array[left])
                     {
-                        int temp = nums[pivot];
-                        nums[pivot] = nums[left];
-                        nums[left] = temp;
+                        int temp = array[pivot];
+                        array[pivot] = array[left];
+                        array[left] = temp;
                     }
                     else
                     {
@@ -194,14 +194,14 @@ namespace MonoGamePool1
             }
             if (right > OuterLeft)
             {
-                nums = QuickMain(nums, OuterLeft, right - 1);
+                array = QuickMain(array, OuterLeft, right - 1);
             }
             if (right + 1 < OuterRight)
             {
-                nums = QuickMain(nums, right + 1, OuterRight);
+                array = QuickMain(array, right + 1, OuterRight);
             }
 
-            return nums;
+            return array;
         }
 
         private static T[] QuickMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int OuterLeft, int OuterRight) //DONE
@@ -267,39 +267,58 @@ namespace MonoGamePool1
 
         public static int[] Bubble(IEnumerable<int> arr) //DONE
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
 
-            for (int x = 0; x < nums.Count(); x++)
+            for (int x = 0; x < array.Count(); x++)
             {
-                for (int y = 0; y < nums.Count() - (x + 1); y++)
+                for (int y = 0; y < array.Count() - (x + 1); y++)
                 {
-                    if (nums[y] > nums[y + 1])
+                    if (array[y] > array[y + 1])
                     {
-                        int temp = nums[y];
-                        nums[y] = nums[y + 1];
-                        nums[y + 1] = temp;
+                        int temp = array[y];
+                        array[y] = array[y + 1];
+                        array[y + 1] = temp;
                     }
                 }
             }
-            return nums;
+            return array;
+        }
+
+        public static T[] BubbleGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer)
+        {
+            T[] array = arr.ToArray();
+
+            for (int x = 0; x < array.Count(); x++)
+            {
+                for (int y = 0; y < array.Count() - (x + 1); y++)
+                {
+                    if (comparer.Compare(array[y], array[y + 1]) == 1)
+                    {
+                        T temp = array[y];
+                        array[y] = array[y + 1];
+                        array[y + 1] = temp;
+                    }
+                }
+            }
+            return array;
         }
 
         public static int[] CocktailShaker(IEnumerable<int> arr) //DONE
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
 
             int left = 0;
-            int right = nums.Count() - 1;
+            int right = array.Count() - 1;
 
             while (left < right)
             {
                 for (int x = left; x < right; x++)
                 {
-                    if (nums[x] > nums[x + 1])
+                    if (array[x] > array[x + 1])
                     {
-                        int temp = nums[x];
-                        nums[x] = nums[x + 1];
-                        nums[x + 1] = temp;
+                        int temp = array[x];
+                        array[x] = array[x + 1];
+                        array[x + 1] = temp;
                     }
                 }
                 left += 1;
@@ -309,16 +328,16 @@ namespace MonoGamePool1
                 }
                 for (int x = right; x >= left; x--)
                 {
-                    if (nums[x] < nums[x - 1])
+                    if (array[x] < array[x - 1])
                     {
-                        int temp = nums[x];
-                        nums[x] = nums[x - 1];
-                        nums[x - 1] = temp;
+                        int temp = array[x];
+                        array[x] = array[x - 1];
+                        array[x - 1] = temp;
                     }
                 }
                 right -= 1;
             }
-            return nums;
+            return array;
         }
 
         public static T[] CocktailShakerGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //DONE
@@ -365,35 +384,35 @@ namespace MonoGamePool1
 
         public static int[] Selection(IEnumerable<int> arr) //DONE
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
             int pos;
-            for (int x = 0; x < nums.Count(); x++)
+            for (int x = 0; x < array.Count(); x++)
             {
                 pos = x;
-                for (int y = x; y < nums.Count(); y++)
+                for (int y = x; y < array.Count(); y++)
                 {
-                    if (nums[y] < nums[pos])
+                    if (array[y] < array[pos])
                     {
                         pos = y;
                     }
                 }
                 if (pos != x)
                 {
-                    int temp = nums[pos];
-                    nums[pos] = nums[x];
-                    nums[x] = temp;
+                    int temp = array[pos];
+                    array[pos] = array[x];
+                    array[x] = temp;
                 }
             }
-            return nums;
+            return array;
         }
 
         public static int[] RadixLSD(IEnumerable<int> arr) //LSD: Least Significant Digit (start with far right digit)
         {
-            var nums = arr.ToArray();
+            var array = arr.ToArray();
             int DigitLength = 0;
             //char[] tempChar = "0".ToCharArray();
             //char zero = tempChar[0];
-            foreach (int n in nums)
+            foreach (int n in array)
             {
                 int len = (int)Math.Log(n, 10);
                 if (len > DigitLength)
@@ -409,13 +428,13 @@ namespace MonoGamePool1
                 {
                     Sorted.Add(new List<int>());
                 }
-                foreach (int n in nums) //Split to digits and add to Sorted
+                foreach (int n in array) //Split to digits and add to Sorted
                 {
                     List<int> digits = SortingTools.Digits(n, DigitLength);
                     Sorted[digits[x]].Add(n);
                 }
 
-                /**foreach (int n in nums)
+                /**foreach (int n in array)
                 {
                     char[] digits = n.ToString().ToCharArray();
 
@@ -425,7 +444,7 @@ namespace MonoGamePool1
                     }
                     if (n.ToString().Length > DigitLength - x) //Get first digit
                     {
-                        char[] digits = nums[y].ToString().ToCharArray();
+                        char[] digits = array[y].ToString().ToCharArray();
                         tempA = digits[x];
                     }
                     else
@@ -442,24 +461,24 @@ namespace MonoGamePool1
                         newNums.Add(i);
                     }
                 }
-                nums = newNums.ToArray<int>();
+                array = newNums.ToArray<int>();
                 Sorted.Clear();
             }
 
 
-            return nums;
+            return array;
         }
 
         public static int[] RadixMSD(IEnumerable<int> arr) //MSD: Most Significant Digit (start with far left digit)
         {
-            var nums = arr.ToArray();
-            return nums;
+            var array = arr.ToArray();
+            return array;
         }
 
         public static int[] Tim(IEnumerable<int> arr) //Hybrid of merge and insertion (used in Python 3)
         {
-            var nums = arr.ToArray();
-            return nums;
+            var array = arr.ToArray();
+            return array;
         }
     }
 }

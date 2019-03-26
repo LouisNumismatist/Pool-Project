@@ -112,13 +112,13 @@ namespace MonoGamePool1
 
         private void BallsPottedASC_Click(object sender, EventArgs e) //Balls Potted ASC
         {
-            HighScoresList = Algorithms.QuickGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
+            HighScoresList = Algorithms.BubbleGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
             WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
         }
 
         private void BallsPottedDESC_Click(object sender, EventArgs e) //Balls Potted DESC
         {
-            HighScoresList = Algorithms.QuickGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
+            HighScoresList = Algorithms.BubbleGeneric(HighScoresList, new HighScoreBallsPottedComparer()).ToList();
             HighScoresList.Reverse();
             WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
         }

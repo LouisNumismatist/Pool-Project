@@ -20,12 +20,8 @@ namespace MonoGamePool1
         static readonly int BallDiam = Game1.BallDiam;
 
         public static Texture2D BlankBox = Game1.BlankBox;
+        public static Texture2D PixelBox;
         public static Texture2D BlankCircle = Game1.BlankCircle;
-
-        /*public static void Draw(Texture2D texture)
-        {
-
-        }*/
 
         public static void DrawBoard(SpriteBatch spriteBatch)
         {
@@ -249,11 +245,34 @@ namespace MonoGamePool1
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, SightLine);
         }*/
 
-        /*public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Texture colour)
+        public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Color colour, bool dotted)
         {
-            Vector2 v = (end - start);
-            sb.Draw(Game1.SmallWhiteSquare, start, null, colour, (float)Math.Atan2(v.Y, v.X), new Vector2(0f, 0.5f), new Vector2(v.Length(), thickness), SpriteEffects.None, 0f); 
-        }*/
+            //Get the vector between the start and the end. (from the start point)
+            Vector2 vectorBetween = end - start;
+            //Get the angle of the vector.
+            float angleVector = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+            //The point on the blank square to draw from.
+            Vector2 origin = new Vector2(0f, 0.5f);
+
+            sb.Draw(Game1.PixelBox, start, null, colour, angleVector, origin, new Vector2(vectorBetween.Length(), thickness), SpriteEffects.None, 0f);
+
+            //Draw the line.
+            /*if (!dotted)
+            {
+                sb.Draw(Game1.PixelBox, start, null, colour, angleVector, origin, new Vector2(vectorBetween.Length(), thickness), SpriteEffects.None, 0f);
+            }
+            else
+            {
+                float m = Physics.Gradient(start, end);
+                float c = Physics.YIntercept(start, m);
+                for (int x = (int)start.X; x < (int)end.X; x++)
+                {
+                    float y = Physics.LineEquation(x, m, c);
+                    sb.Draw(Game1.PixelBox, new Vector2(x, y), null, colour, angleVector, origin, new Vector2(vectorBetween.Length() / 20, thickness), SpriteEffects.None, 0f);
+                }
+            }*/
+
+        }
 
         /*public static void DrawButton(ref Button button, SpriteBatch spriteBatch)
         {
@@ -340,6 +359,6 @@ namespace MonoGamePool1
             spriteBatch.DrawString(font, name2, pos2, Color.Black);
         }*/
 
-        
+
     }
 }

@@ -359,6 +359,11 @@ namespace MonoGamePool1
         public void DrawLetters(SpriteBatch spriteBatch)
         {
             List<string> letters = Chars.GetContents();
+            foreach (string letter in letters)
+            {
+                Console.Write(letter + ", ");
+            }
+            Console.WriteLine();
             if (Chars.GetLength() <= MaxChars)
             {
                 for (int x = 0; x < Chars.GetLength(); x++)
