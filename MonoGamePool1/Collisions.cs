@@ -347,7 +347,7 @@ namespace MonoGamePool1
                 a.Velocity = angleToUseA.ToVector2() * newAVelocity.Length();
                 b.Velocity = angleToUseB.ToVector2() * newBVelocity.Length();
 
-                newAVelocity.Normalize();
+                newAVelocity = Physics.UnitVector(newAVelocity);
 
                 a.Center += collDepth * newAVelocity;
             }

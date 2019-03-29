@@ -20,7 +20,7 @@ namespace MonoGamePool1
             Vector2 start = new Vector2(CueBall.X, CueBall.Y);
             Vector2 between = end - start;
             float dist = between.Length();
-            between.Normalize();
+            between = Physics.UnitVector(between);
             Vector2 offset = between * Math.Max(0, (dist - 400) * 0.4f);
             end = start + between * 400f;
 
