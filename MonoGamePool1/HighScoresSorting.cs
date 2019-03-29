@@ -87,7 +87,7 @@ namespace MonoGamePool1
             if (HighScoresList.Count() > 0)
             {
                 List<HighScore> reversed = new List<HighScore>();
-                Stack<HighScore> tempstack = new Stack<HighScore>(0, new List<HighScore>());
+                Stack<HighScore> tempstack = new Stack<HighScore>(new HighScore[HighScoresList.Count()], HighScoresList.Count());
                 foreach (HighScore hs in HighScoresList)
                 {
                     tempstack.Push(hs);

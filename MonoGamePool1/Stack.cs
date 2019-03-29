@@ -14,12 +14,14 @@ namespace MonoGamePool1
     public class Stack<T>
     {
         private int Pointer;
-        private readonly List<T> Contents;
+        private readonly T[] Contents;
+        private readonly int Max;
 
-        public Stack(int pointer, List<T> contents)
+        public Stack(T[] contents, int max)
         {
-            Pointer = pointer;
+            Pointer = 0;
             Contents = contents;
+            Max = max;
         }
 
         public int GetLength()
@@ -29,10 +31,10 @@ namespace MonoGamePool1
 
         public void Push(T a)
         {
-            if (GetLength() < Contents.Count())
+            if (Pointer < Max)
             {
-                Pointer++;
                 Contents[Pointer] = a;
+                Pointer++;
             }
         }
 
@@ -64,7 +66,7 @@ namespace MonoGamePool1
         {
             if (Pointer > 0)
             {
-                return Contents[Pointer];
+                return Contents[Pointer - 1];
             }
             else
             {
@@ -72,24 +74,9 @@ namespace MonoGamePool1
             }
         }
 
-        public List<T> GetContents()
+        public T[] GetContents()
         {
             return Contents;
         }
-        
-        public int GetPointer()
-        {
-            return Pointer;
-
-        }
-
-        /*public void Insert(T item) //NEED TO REMOVE
-        {
-            for (int x = Contents.Count() - 1; x > Pointer; x--)
-            {
-                Contents[x] = Contents[x - 1];
-            }
-            Push(item);
-        }*/
     }
 }

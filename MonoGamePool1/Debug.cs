@@ -125,7 +125,7 @@ namespace MonoGamePool1
                     if (ball.Velocity.Length() > 0)
                     {
                         Vector2 unitVector = Physics.UnitVector(ball.Velocity) * ball.Radius * 2;
-                        new DiagonalLine(0, 1, ball.Center, new Vector2(ball.Center.X + unitVector.X, ball.Center.Y + unitVector.Y), Color.White, false).Draw(spriteBatch);
+                        new DiagonalLine(1, ball.Center, new Vector2(ball.Center.X + unitVector.X, ball.Center.Y + unitVector.Y), Color.White, false).Draw(spriteBatch);
                     }
                 }
             }

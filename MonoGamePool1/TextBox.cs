@@ -21,12 +21,12 @@ namespace MonoGamePool1
         public string TempText;
         public string Output;
 
-        public static bool CapsLock = false;
-        public static bool TempCapsLock = false;
-        public static readonly List<string> NumPadKeys = new List<string>() { "NumPad0", "NumPad1", "NumPad2", "NumPad3", "NumPad4", "NumPad5", "NumPad6", "NumPad7", "NumPad8", "NumPad9" };
-        public static readonly List<string> DKeys = new List<string>() { "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9" };
+        public bool CapsLock = false;
+        public bool TempCapsLock = false;
+        public readonly List<string> NumPadKeys = new List<string>() { "NumPad0", "NumPad1", "NumPad2", "NumPad3", "NumPad4", "NumPad5", "NumPad6", "NumPad7", "NumPad8", "NumPad9" };
+        public readonly List<string> DKeys = new List<string>() { "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9" };
 
-        public static void CheckCaps(string com)
+        public void CheckCaps(string com)
         {
             if (com == "CapsLock" || com == "Capital") //CapsLock (20)
             {
@@ -42,7 +42,7 @@ namespace MonoGamePool1
             }
         }
 
-        public static bool Exit(string com)
+        public bool Exit(string com)
         {
             bool press = true;
             if (com == "Tab" || com == "Enter" || com == "Return" || com == "Escape") // Exit textbox (09 / 13 / 27) - Seperate Return and Enter to change depending on keyboard and maximise ability
@@ -76,6 +76,16 @@ namespace MonoGamePool1
         {
             int depth = 2;
             spriteBatch.Draw(Texture, new Rectangle((int)Origin.X + depth + pointer * LetterWidth, (int)Origin.Y + depth, 1, (int)Dimensions.Y - 2 * depth), Color.Black);
+        }
+
+        public bool ValidEntry()
+        {
+            return Output.Length > 0 && Output.Length < MaxChars - 2;
+        }
+
+        public void Invalid()
+        {
+            TempText = "INVALID";
         }
     }
     /// <summary>
@@ -179,10 +189,8 @@ namespace MonoGamePool1
                         Pointer += 1;
                     }
                 }
-
                 IdentifyCommand(letter);
                 MovePointer(letter);
-
             }
         }
 
@@ -236,6 +244,12 @@ namespace MonoGamePool1
                 }
             }
         }
+
+        public void Clear()
+        {
+            Chars.Clear();
+            Output = "";
+        }
     }
     /// <summary>
     /// Textbox which uses a stack structure to store and alter data
@@ -244,50 +258,51 @@ namespace MonoGamePool1
     {
         public Stack<string> Chars;
 
-        public StackTextBox(Vector2 origin, int width, SpriteFont font, string text)
+        public StackTextBox(Vector2 origin, SpriteFont font, int maxchars, string temptext)
         {
             Origin = origin;
-            Dimensions = new Vector2((width + 0.4f) * LetterWidth, LetterHeight);
-
-            Chars = new Stack<string>(0, new List<string>());
+            Dimensions = new Vector2((maxchars + 0.4f) * LetterWidth, LetterHeight);
+            Chars = new Stack<string>(new string[maxchars], maxchars);
             Colour = Color.Red;
             Font = font;
             Pressed = false;
             Timer = 0;
-            MaxChars = width;
+            MaxChars = maxchars;
             Border = 2;
-            TempText = text;
+            TempText = temptext;
             Output = "";
         }
-
-        /*public bool GetPressed()
-        {
-            return Pressed;
-        }*/
 
         public void IdentifyCommand(string com)
         {
             CheckCaps(com);
-
-            if (com == "Space") //Spacebar (32)
+            if (com == "Enter" | com == "Return")
+            {
+                if (!Pressed && Chars.GetLength() > 0)
+                {
+                    if (ValidEntry())
+                    {
+                        for (int c = 0; c < Chars.GetLength(); c++)
+                        {
+                            string letter = Chars.Pop();
+                            Output += letter;
+                        }
+                    }
+                    else
+                    {
+                        Invalid();
+                    }
+                }
+                Console.WriteLine(Chars.GetLength());
+                Console.WriteLine(Output);
+            }
+            else if (com == "Space") //Spacebar (32)
             {
                 Chars.Push(" ");
-                //Chars.Add(" ");
-                /*Pointer += 1;
-                if (LinePos < MaxChars)
-                {
-                    LinePos += 1;
-                }*/
             }
             else if (com == "Back") //Backspace (08)
             {
                 Chars.Pop();
-                //Chars.RemoveAt(Pointer - 1);
-                //MovePointer("Left");
-                /*if (LinePos > 0)
-                {
-                    LinePos -= 1;
-                }*/
             }
             else if (NumPadKeys.Contains(com))
             {
@@ -299,13 +314,15 @@ namespace MonoGamePool1
                 Chars.Push(DKeys.IndexOf(com).ToString());
                 //MovePointer("Right");
             }
-            else if (com == "Enter")
+            /*else if (com == "Enter")
             {
                 for (int c = 0; c < Chars.GetLength(); c++)
                 {
-                    Output.Insert(0, Chars.Pop());
+                    Output = Chars.Pop() + Output;
+                    //Output.Insert(0, Chars.Pop());
                 }
-            }
+                Console.WriteLine("Output: " + Output);
+            }*/
             Pressed = Exit(com);
         }
 
@@ -329,10 +346,11 @@ namespace MonoGamePool1
                         }
                     }
                 }
+                IdentifyCommand(letter);
             }
         }
 
-        public void DrawTextBox(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             Color color;
             if (Pressed)
@@ -348,6 +366,7 @@ namespace MonoGamePool1
 
             if (Chars.GetLength() > 0 | Pressed)
             {
+                //Console.WriteLine("Here!");
                 DrawLetters(spriteBatch);
             }
             else
@@ -358,12 +377,13 @@ namespace MonoGamePool1
 
         public void DrawLetters(SpriteBatch spriteBatch)
         {
-            List<string> letters = Chars.GetContents();
-            foreach (string letter in letters)
+            string[] letters = Chars.GetContents();
+            //Console.Write("Letters: ");
+            /*foreach (string letter in letters)
             {
                 Console.Write(letter + ", ");
-            }
-            Console.WriteLine();
+            }*/
+            //Console.WriteLine();
             if (Chars.GetLength() <= MaxChars)
             {
                 for (int x = 0; x < Chars.GetLength(); x++)
@@ -379,6 +399,11 @@ namespace MonoGamePool1
                     spriteBatch.DrawString(Font, letters[y], new Vector2(Origin.X + x * LetterWidth + 1, Origin.Y), Color.Black);
                 }
             }
+        }
+        public void Clear()
+        {
+            Chars.Clear();
+            Output = "";
         }
     }
 }

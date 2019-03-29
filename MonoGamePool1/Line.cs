@@ -23,7 +23,7 @@ namespace MonoGamePool1
     /// </summary>
     public class DiagonalLine
     {
-        public int ID;
+        //public int ID;
         public int Thickness;
         public Vector2 Start;
         public Vector2 End;
@@ -31,9 +31,9 @@ namespace MonoGamePool1
         public bool Dotted;
         public Texture2D Texture;
 
-        public DiagonalLine(int id, int thickness, Vector2 start, Vector2 end, Color colour, bool dotted)
+        public DiagonalLine(int thickness, Vector2 start, Vector2 end, Color colour, bool dotted)
         {
-            ID = id;
+            //ID = id;
             Thickness = thickness;
             Start = start;
             End = end;
@@ -44,7 +44,15 @@ namespace MonoGamePool1
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Graphics.DrawLine(spriteBatch, Start, End, Thickness, Colour, Dotted);
+            //Get the vector between the start and the end. (from the start point)
+            Vector2 vectorBetween = End - Start;
+            //Get the angle of the vector.
+            float angleVector = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+            //The point on the blank square to draw from.
+            Vector2 origin = new Vector2(0f, 0.5f);
+
+            spriteBatch.Draw(Game1.PixelBox, Start, null, Colour, angleVector, origin, new Vector2(vectorBetween.Length(), Thickness), SpriteEffects.None, 0f);
+            //Graphics.DrawLine(spriteBatch, Start, End, Thickness, Colour, Dotted);
             /*
             float m = Physics.Gradient(Start, End);
             int count = 0;

@@ -224,14 +224,14 @@ namespace MonoGamePool1
             }
         }*/
 
-        public static void DrawCushionDiagonals(SpriteBatch spriteBatch, List<DiagonalLine> DiagonalLines)
+        /*public static void DrawCushionDiagonals(SpriteBatch spriteBatch, List<DiagonalLine> DiagonalLines)
         {
             foreach (DiagonalLine a in DiagonalLines)
             {
                 Console.WriteLine("a, {0}, {1}", a.Start, a.End);
                 a.Draw(spriteBatch);
             }
-        }
+        }*/
 
         /*public static void DrawPoolCue(SpriteBatch spriteBatch, DiagonalLine PoolCue)
         {
@@ -245,7 +245,7 @@ namespace MonoGamePool1
             //DrawDiagonalLine_JOSH_VERSION(spriteBatch, SightLine);
         }*/
 
-        public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Color colour, bool dotted)
+        /*public static void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, int thickness, Color colour, bool dotted)
         {
             //Get the vector between the start and the end. (from the start point)
             Vector2 vectorBetween = end - start;
@@ -257,7 +257,7 @@ namespace MonoGamePool1
             sb.Draw(Game1.PixelBox, start, null, colour, angleVector, origin, new Vector2(vectorBetween.Length(), thickness), SpriteEffects.None, 0f);
 
             //Draw the line.
-            /*if (!dotted)
+            if (!dotted)
             {
                 sb.Draw(Game1.PixelBox, start, null, colour, angleVector, origin, new Vector2(vectorBetween.Length(), thickness), SpriteEffects.None, 0f);
             }
@@ -270,9 +270,9 @@ namespace MonoGamePool1
                     float y = Physics.LineEquation(x, m, c);
                     sb.Draw(Game1.PixelBox, new Vector2(x, y), null, colour, angleVector, origin, new Vector2(vectorBetween.Length() / 20, thickness), SpriteEffects.None, 0f);
                 }
-            }*/
+            }
 
-        }
+        }*/
 
         /*public static void DrawButton(ref Button button, SpriteBatch spriteBatch)
         {

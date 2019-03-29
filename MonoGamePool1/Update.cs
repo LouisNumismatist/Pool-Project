@@ -15,7 +15,16 @@ namespace MonoGamePool1
         {
             //PoolCue.Start = mousePosition;
             //PoolCue.End = CueBall;
-            return new DiagonalLine(PoolCue.ID, 5, mousePosition, new Vector2(CueBall.X, CueBall.Y), PoolCue.Colour, false); // - (5 / 2)
+
+            Vector2 end = mousePosition;
+            Vector2 start = new Vector2(CueBall.X, CueBall.Y);
+            Vector2 between = end - start;
+            float dist = between.Length();
+            between.Normalize();
+            Vector2 offset = between * Math.Max(0, (dist - 400) * 0.4f);
+            end = start + between * 400f;
+
+            return new DiagonalLine(PoolCue.Thickness, start + offset, end + offset, PoolCue.Colour, false); // - (5 / 2)
         }
 
         public static DiagonalLine UpdateSightLine(DiagonalLine SightLine, Vector2 mousePosition, Vector2 CueBall, DiagonalLine PoolCue)
@@ -25,7 +34,7 @@ namespace MonoGamePool1
             //SightLine.End.X = CueBall.X + 2 * (CueBall.X - mousePosition.X) - 1;
             //SightLine.End.Y = CueBall.Y + 2 * (CueBall.Y - mousePosition.Y) - 1;
             //SightLine.End = new Vector2(CueBall.X + 2 * (CueBall.X - mousePosition.X), CueBall.Y + 2 * (CueBall.Y - mousePosition.Y));
-            return new DiagonalLine(SightLine.ID, 5, CueBall, SightLine.End, SightLine.Colour, true);
+            return new DiagonalLine(SightLine.Thickness, CueBall, SightLine.End, SightLine.Colour, true);
         }
 
         public static void UpdateCurrentPlayer(ref int currentplayer, List<Player> players)

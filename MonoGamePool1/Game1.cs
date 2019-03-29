@@ -107,8 +107,8 @@ namespace MonoGamePool1
             Init.InitialisePockets(ref PocketList, 22, Color.Black);
             //PoolCue = Init.InitialisePoolCue();
             //SightLine = Init.InitialiseSightLine();
-            PoolCue = new DiagonalLine(0, 5, origin, new Vector2(ScreenWidth, 274), Color.DarkOrange, true);
-            SightLine = new DiagonalLine(0, 3, origin, new Vector2(274, 274), Color.Sienna, false); // - (5 / 2)
+            PoolCue = new DiagonalLine(5, origin, new Vector2(ScreenWidth, 274), Color.DarkOrange, true);
+            SightLine = new DiagonalLine(3, origin, new Vector2(274, 274), Color.Sienna, false); // - (5 / 2)
             string tempString = FileSaving.ObjectToString(BallsList[0]);
             //Ball tempBall = FileSaving.StringToObject(tempString, BallsDict);
             SaveButton = new Button(new Vector2(ScreenWidth + 230, 30), "SAVE", Color.Blue, font);
@@ -120,8 +120,8 @@ namespace MonoGamePool1
 
             RowsBox = new NumBox(new Vector2(ScreenWidth + 230, 180), TextBoxFont, 14);
 
-            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 235, 210), TextBoxFont, 10, "Enter:");
-            NameBox = new StackTextBox(new Vector2(ScreenWidth + 235, 240), 12, TextBoxFont, "Name:");
+            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 230, 210), TextBoxFont, 14, "Player 1:");
+            NameBox = new StackTextBox(new Vector2(ScreenWidth + 230, 240), TextBoxFont, 14, "Player 2:");
 
             SightSelect = new SwitchBox(new Vector2(ScreenWidth + 235, 270), TextBoxFont);
             
@@ -182,7 +182,6 @@ namespace MonoGamePool1
             Input.UpdateInputs();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                //FileSaving.WriteToFile(@"C:\Users\Louis\source\repos\MonoGamePool1", BallsList); DO NOT UNCOMMENT
                 this.Exit();
             // TODO: Add your update logic here
 
@@ -203,6 +202,32 @@ namespace MonoGamePool1
             if (NameBox.Pressed)
             {
                 TypeBox.Pressed = false;
+            }
+
+            if (TypeBox.Output.Length > 0)
+            {
+                if (TypeBox.ValidEntry())
+                {
+                    Player1Name = TypeBox.Output;
+                    TypeBox.Clear();
+                }
+                else
+                {
+                    TypeBox.Invalid();
+                }
+                
+            }
+            if (NameBox.Output.Length > 0)
+            {
+                if (NameBox.ValidEntry())
+                {
+                    Player2Name = NameBox.Output;
+                    NameBox.Clear();
+                }
+                else
+                {
+                    NameBox.Invalid();
+                }
             }
 
             SightSelect.Update();
@@ -304,15 +329,16 @@ namespace MonoGamePool1
 
                 if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
                 {
-                    if (DisplacementMarker != BallsList[15].Center)
+                    Ball cueBall = BallsList[BallsList.Count() - 1];
+                    if (DisplacementMarker != cueBall.Center)
                     {
-                        DisplacementMarker = BallsList[15].Center;
+                        DisplacementMarker = cueBall.Center;
                     }
                     BallsList[a] = Debug.PingBall(BallsList[a]);
-                    PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
+                    PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, cueBall.Center);
                     if (Debug.sightStatus)
                     {
-                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
+                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, cueBall.Center, PoolCue);
                     }
                 }
             }
@@ -355,7 +381,7 @@ namespace MonoGamePool1
             DebugButton.Draw(spriteBatch);
 
             TypeBox.Draw(spriteBatch);
-            NameBox.DrawTextBox(spriteBatch);
+            NameBox.Draw(spriteBatch);
 
             SightSelect.Draw(spriteBatch);
             if (Debug.sightStatus)
