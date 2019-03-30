@@ -197,36 +197,38 @@ namespace MonoGamePool1
             if (TypeBox.Pressed)
             {
                 NameBox.Pressed = false;
+                TypeBox.UpdateLetters();
             }
             NameBox.UpdatePressed();
             if (NameBox.Pressed)
             {
                 TypeBox.Pressed = false;
+                NameBox.UpdateLetters();
             }
 
             if (TypeBox.Output.Length > 0)
             {
                 if (TypeBox.ValidEntry())
                 {
-                    Player1Name = TypeBox.Output;
+                    Players[0].UpdateName(TypeBox.Output);
                     TypeBox.Clear();
                 }
                 else
                 {
-                    TypeBox.Invalid();
+                    TypeBox.Valid = false;
                 }
-                
             }
+
             if (NameBox.Output.Length > 0)
             {
                 if (NameBox.ValidEntry())
                 {
-                    Player2Name = NameBox.Output;
+                    Players[1].UpdateName(NameBox.Output);
                     NameBox.Clear();
                 }
                 else
                 {
-                    NameBox.Invalid();
+                    NameBox.Valid = false;
                 }
             }
 
@@ -235,19 +237,7 @@ namespace MonoGamePool1
             {
                 Debug.sightStatus = !Debug.sightStatus;
             }
-            if (TypeBox.Pressed)
-            {
-                TypeBox.UpdateLetters();
-            }
-            if (NameBox.Pressed)
-            {
-                NameBox.UpdateLetters();
-            }
-            if (NameBox.Output.Length > 0)
-            {
-                Player1Name = NameBox.Output;
-                NameBox.Output = "";
-            }
+            
             string CompUsername = Environment.UserName;
             if (SaveButton.Pressed && Input.LeftMouseJustClicked())
             {

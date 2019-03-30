@@ -19,6 +19,7 @@ namespace MonoGamePool1
         public static int BlinkTimer = 60;
         public int MaxChars;
         public string TempText;
+        public bool Valid;
         public string Output;
 
         public bool CapsLock = false;
@@ -80,12 +81,20 @@ namespace MonoGamePool1
 
         public bool ValidEntry()
         {
-            return Output.Length > 0 && Output.Length < MaxChars - 2;
+            Valid = Output.Length > 0 && Output.Length < MaxChars - 2;
+            return Valid;
         }
 
-        public void Invalid()
+        public string TempWrite()
         {
-            TempText = "INVALID";
+            if (Valid)
+            {
+                return TempText;
+            }
+            else
+            {
+                return "INVALID";
+            }
         }
     }
     /// <summary>
@@ -111,30 +120,60 @@ namespace MonoGamePool1
             Border = 2;
             LinePos = 0;
             TempText = temptext;
+            Valid = true;
             Output = "";
+        }
+
+        public void IncreaseLinePos()
+        {
+            if (LinePos < MaxChars)
+            {
+                LinePos += 1;
+            }
+        }
+
+        public void DecreaseLinePos()
+        {
+            if (LinePos > 0)
+            {
+                LinePos -= 1;
+            }
         }
 
         public void IdentifyCommand(string com)
         {
             CheckCaps(com);
-
+            if (com == "Enter" | com == "Return")
+            {
+                if (Chars.Count > 0)
+                {
+                    if (Chars.Count > 0 && Chars.Count < MaxChars - 2)
+                    {
+                        foreach (string letter in Chars)
+                        {
+                            Output += letter;
+                        }
+                        Chars = new List<string>();
+                    }
+                    else
+                    {
+                        Valid = false;
+                        Clear();
+                    }
+                }
+            }
             if (com == "Space") //Spacebar (32)
             {
                 Chars.Add(" ");
-                Pointer += 1;
-                if (LinePos < MaxChars)
-                {
-                    LinePos += 1;
-                }
+                //Pointer += 1;
+                MovePointer("Right");
+                IncreaseLinePos();
             }
             else if (com == "Back" && Pointer > 0) //Backspace (08)
             {
                 Chars.RemoveAt(Pointer - 1);
                 MovePointer("Left");
-                if (LinePos > 0)
-                {
-                    LinePos -= 1;
-                }
+                DecreaseLinePos();
             }
             else if (com == "Delete" && Pointer < Chars.Count())
             {
@@ -144,11 +183,13 @@ namespace MonoGamePool1
             {
                 Chars.Add(NumPadKeys.IndexOf(com).ToString());
                 MovePointer("Right");
+                IncreaseLinePos();
             }
             else if (DKeys.Contains(com))
             {
                 Chars.Add(DKeys.IndexOf(com).ToString());
                 MovePointer("Right");
+                IncreaseLinePos();
             }
             Pressed = Exit(com);
         }
@@ -161,9 +202,6 @@ namespace MonoGamePool1
             }
             else if (com == "Right" && Pointer < MaxChars)
             {
-                Console.Write(Pointer);
-                Console.Write(" ");
-                Console.WriteLine(MaxChars);
                 Pointer += 1;
             }
         }
@@ -186,7 +224,9 @@ namespace MonoGamePool1
                         {
                             Chars.Insert(Pointer, letter.ToLower());
                         }
-                        Pointer += 1;
+                        //Pointer += 1;
+                        MovePointer("Right");
+                        IncreaseLinePos();
                     }
                 }
                 IdentifyCommand(letter);
@@ -194,13 +234,13 @@ namespace MonoGamePool1
             }
         }
 
-        public void AddChar(Keys key)
+        /*public void AddChar(Keys key)
         {
             if (Chars.Count() <= MaxChars)
             {
                 Chars.Insert(Pointer, key.ToString());
             }
-        }
+        }*/
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -222,7 +262,7 @@ namespace MonoGamePool1
             }
             else
             {
-                spriteBatch.DrawString(Font, TempText, Origin, Color.Gray);
+                spriteBatch.DrawString(Font, TempWrite(), Origin, Color.Gray);
             }
         }
 
@@ -249,6 +289,8 @@ namespace MonoGamePool1
         {
             Chars.Clear();
             Output = "";
+            Pointer = 0;
+            LinePos = 0;
         }
     }
     /// <summary>
@@ -270,6 +312,7 @@ namespace MonoGamePool1
             MaxChars = maxchars;
             Border = 2;
             TempText = temptext;
+            Valid = true;
             Output = "";
         }
 
@@ -278,23 +321,23 @@ namespace MonoGamePool1
             CheckCaps(com);
             if (com == "Enter" | com == "Return")
             {
-                if (!Pressed && Chars.GetLength() > 0)
+                if (Chars.GetLength() > 0)
                 {
-                    if (ValidEntry())
+                    if (Chars.GetLength() > 0 && Chars.GetLength() < MaxChars - 2)
                     {
-                        for (int c = 0; c < Chars.GetLength(); c++)
+                        string letter;
+                        while (!Chars.IsEmpty())
                         {
-                            string letter = Chars.Pop();
-                            Output += letter;
+                            letter = Chars.Pop();
+                            Output = letter + Output;
                         }
                     }
                     else
                     {
-                        Invalid();
+                        Valid = false;
+                        Clear();
                     }
                 }
-                Console.WriteLine(Chars.GetLength());
-                Console.WriteLine(Output);
             }
             else if (com == "Space") //Spacebar (32)
             {
@@ -307,22 +350,12 @@ namespace MonoGamePool1
             else if (NumPadKeys.Contains(com))
             {
                 Chars.Push(NumPadKeys.IndexOf(com).ToString());
-                //MovePointer("Right");
             }
             else if (DKeys.Contains(com))
             {
                 Chars.Push(DKeys.IndexOf(com).ToString());
-                //MovePointer("Right");
             }
-            /*else if (com == "Enter")
-            {
-                for (int c = 0; c < Chars.GetLength(); c++)
-                {
-                    Output = Chars.Pop() + Output;
-                    //Output.Insert(0, Chars.Pop());
-                }
-                Console.WriteLine("Output: " + Output);
-            }*/
+
             Pressed = Exit(com);
         }
 
@@ -366,24 +399,18 @@ namespace MonoGamePool1
 
             if (Chars.GetLength() > 0 | Pressed)
             {
-                //Console.WriteLine("Here!");
                 DrawLetters(spriteBatch);
             }
             else
             {
-                spriteBatch.DrawString(Font, TempText, Origin, Color.Gray);
+                spriteBatch.DrawString(Font, TempWrite(), Origin, Color.Gray);
             }
         }
 
         public void DrawLetters(SpriteBatch spriteBatch)
         {
             string[] letters = Chars.GetContents();
-            //Console.Write("Letters: ");
-            /*foreach (string letter in letters)
-            {
-                Console.Write(letter + ", ");
-            }*/
-            //Console.WriteLine();
+
             if (Chars.GetLength() <= MaxChars)
             {
                 for (int x = 0; x < Chars.GetLength(); x++)
@@ -400,6 +427,7 @@ namespace MonoGamePool1
                 }
             }
         }
+
         public void Clear()
         {
             Chars.Clear();

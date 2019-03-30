@@ -21,22 +21,9 @@ namespace MonoGamePool1
                 Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2: DISTANCE BETWEEN BALLS IN VECTOR2 FORM
                 float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse : DISTANCE BETWEEN BALLS AS FLOAT
 
-                if (Vector2.Distance(a.Center, b.Center) != dist) //REPLACE WITH DISTANCE()
-                {
-                    Console.Write(dist);
-                    Console.Write(" , ");
-                    Console.WriteLine(Vector2.Distance(a.Center, b.Center));
-                }
-
                 float overlap = a.Radius + b.Radius - dist;
 
                 Vector2 minimumTranslationVector = componentsDist * (overlap / dist);
-
-                //float mass = 0.170097f; // a.Mass
-                //float mass2 = 0.170097f; // b.Mass
-
-                //float invMass1 = 1f / a.Mass;
-                //float invMass2 = 1f / b.Mass;
 
                 float totalMass = (1 / a.Mass) + (1 / b.Mass); // (m2 + m1)/(m1*m2)
 
@@ -47,12 +34,12 @@ namespace MonoGamePool1
                 //calculate impact speed
                 Vector2 impactVelocity = a.Velocity - b.Velocity;
 
-                Vector2 vectorNormalised = componentsDist / componentsDist.Length();
+                Vector2 vectorNormalised = Physics.UnitVector(componentsDist);
 
                 float vn = Vector2.Dot(impactVelocity, vectorNormalised);
 
                 //if balls are not already moving away from each other
-                if (vn <= 0f)
+                if (vn <= 0)
                 {
                     //calculate magnitude of the impulse
                     float i = (-(1 - Physics.coefficient_of_restitution_ball) * vn) / totalMass;

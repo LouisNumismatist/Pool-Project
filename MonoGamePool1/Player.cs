@@ -26,7 +26,7 @@ namespace MonoGamePool1
             Colour = Color.White;
         }
 
-        public static bool ValidateName(string name)
+        public static  bool ValidateName(string name)
         {
             bool Valid = true;
             if (name.Length < 11)
@@ -45,6 +45,10 @@ namespace MonoGamePool1
                 Valid = false;
             }
             return Valid;
+        }
+        public void UpdateName(string newName)
+        {
+            Name = newName;
         }
     }
 }
