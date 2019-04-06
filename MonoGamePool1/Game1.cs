@@ -31,6 +31,8 @@ namespace MonoGamePool1
 
         public static Vector2 DisplacementMarker;
 
+        public static bool EndGame = false;
+        public static bool PlacingCueBall = false;
         public static bool HittingCueBall;
         public static int BorderWidth = 40;
         public static int ScreenHeight = 548;
@@ -40,8 +42,10 @@ namespace MonoGamePool1
         public List<Pocket> PocketList = new List<Pocket>();                            //Max Velocity should be 16m/s which is 64px/s
         public List<Pocket> OuterPockets = new List<Pocket>();
         public List<Ball> Graveyard = new List<Ball>();
+        public List<Ball> RecentlyPotted = new List<Ball>();
         public List<Button> ButtonList = new List<Button>();
-        public List<DiagonalLine> DiagonalLines = new List<DiagonalLine>();
+        //public List<DiagonalLine> DiagonalLines = new List<DiagonalLine>();
+        public static Color FirstTapped = Color.White;
 
         public static DiagonalLine PoolCue;
         public static DiagonalLine SightLine;
@@ -52,6 +56,7 @@ namespace MonoGamePool1
         public static Button ResetButton;
         public static Button PauseButton;
         public static Button DebugButton;
+        public static Button HelpButton;
 
         public static RegTextBox TypeBox;
         public static StackTextBox NameBox;
@@ -61,9 +66,9 @@ namespace MonoGamePool1
         public static MiniGraph DisplacementTimeGraph;
         public static MiniGraph EkTimeGraph;
         public static MiniGraph CentripetalForceGraph;
-        public List<Player> Players = new List<Player>();
-        public static string Player1Name = "PlayerA";
-        public static string Player2Name = "PlayerB";
+        public static List<Player> Players = new List<Player>();
+        public static string Player1Name = "Player 1";
+        public static string Player2Name = "Player 2";
         public static int CurrentPlayer = 0;
         public static Ball LastBall;
         public static SwitchBox SightSelect;
@@ -75,9 +80,6 @@ namespace MonoGamePool1
         public Game1()
         {
             instance = this;
-
-            //ProcessStartInfo info = new ProcessStartInfo("www.rbwhitaker.wikidot.com/xna-tutorials");
-            //Process.Start(info);
             
             graphics = new GraphicsDeviceManager(this)
             {
@@ -114,14 +116,15 @@ namespace MonoGamePool1
             SaveButton = new Button(new Vector2(ScreenWidth + 230, 30), "SAVE", Color.Blue, font);
             LoadButton = new Button(new Vector2(ScreenWidth + 230 + 66, 30), "LOAD", Color.Blue, font);
             HighScoresButton = new Button(new Vector2(ScreenWidth + 230, 60), "HIGHSCORES", Color.Blue, font); //Same row
-            ResetButton = new Button(new Vector2(ScreenWidth + 230, 90), "RESET", Color.Blue, font);
-            PauseButton = new Button(new Vector2(ScreenWidth + 230, 120), "PAUSE", Color.Blue, font);
-            DebugButton = new Button(new Vector2(ScreenWidth + 230, 150),"DEBUG", Color.Blue, font);
+            ResetButton = new Button(new Vector2(ScreenWidth + 230 + 66, 90), "RESET", Color.Blue, font);
+            PauseButton = new Button(new Vector2(ScreenWidth + 230, 90), "PAUSE", Color.Blue, font);
+            DebugButton = new Button(new Vector2(ScreenWidth + 230, 120),"DEBUG", Color.Blue, font);
+            HelpButton = new Button(new Vector2(ScreenWidth + 230 + 66, 120), "HELP", Color.Blue, font);
 
             RowsBox = new NumBox(new Vector2(ScreenWidth + 230, 180), TextBoxFont, 14);
 
-            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 230, 210), TextBoxFont, 14, "Player 1:");
-            NameBox = new StackTextBox(new Vector2(ScreenWidth + 230, 240), TextBoxFont, 14, "Player 2:");
+            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 230, 210), TextBoxFont, 14, Player1Name + ":");
+            NameBox = new StackTextBox(new Vector2(ScreenWidth + 230, 240), TextBoxFont, 14, Player2Name + ":");
 
             SightSelect = new SwitchBox(new Vector2(ScreenWidth + 235, 270), TextBoxFont);
             
@@ -184,163 +187,182 @@ namespace MonoGamePool1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             // TODO: Add your update logic here
+            if (!EndGame)
+            {
+                SaveButton.Update(Input.mousePosition);
+                LoadButton.Update(Input.mousePosition);
+                HighScoresButton.Update(Input.mousePosition);
+                ResetButton.Update(Input.mousePosition);
+                PauseButton.Update(Input.mousePosition);
+                DebugButton.Update(Input.mousePosition);
+                HelpButton.Update(Input.mousePosition);
+                RowsBox.Update();
 
-            SaveButton.Update(Input.mousePosition);
-            LoadButton.Update(Input.mousePosition);
-            HighScoresButton.Update(Input.mousePosition);
-            ResetButton.Update(Input.mousePosition);
-            PauseButton.Update(Input.mousePosition);
-            DebugButton.Update(Input.mousePosition);
-            RowsBox.Update();
+                TypeBox.UpdatePressed();
+                if (TypeBox.Pressed)
+                {
+                    NameBox.Pressed = false;
+                    TypeBox.UpdateLetters();
+                }
+                NameBox.UpdatePressed();
+                if (NameBox.Pressed)
+                {
+                    TypeBox.Pressed = false;
+                    NameBox.UpdateLetters();
+                }
 
-            TypeBox.UpdatePressed();
-            if (TypeBox.Pressed)
-            {
-                NameBox.Pressed = false;
-                TypeBox.UpdateLetters();
-            }
-            NameBox.UpdatePressed();
-            if (NameBox.Pressed)
-            {
-                TypeBox.Pressed = false;
-                NameBox.UpdateLetters();
-            }
-
-            if (TypeBox.Output.Length > 0)
-            {
-                if (TypeBox.ValidEntry())
+                if (TypeBox.Output.Length > 0)
                 {
-                    Players[0].UpdateName(TypeBox.Output);
-                    TypeBox.Clear();
-                }
-                else
-                {
-                    TypeBox.Valid = false;
-                }
-            }
-
-            if (NameBox.Output.Length > 0)
-            {
-                if (NameBox.ValidEntry())
-                {
-                    Players[1].UpdateName(NameBox.Output);
-                    NameBox.Clear();
-                }
-                else
-                {
-                    NameBox.Valid = false;
-                }
-            }
-
-            SightSelect.Update();
-            if ((SightSelect.State && !Debug.sightStatus) || (!SightSelect.State && Debug.sightStatus))
-            {
-                Debug.sightStatus = !Debug.sightStatus;
-            }
-            
-            string CompUsername = Environment.UserName;
-            if (SaveButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\";
-                GameStatus.SaveGame(BallsList, path);
-            }
-            if (LoadButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\2019-3-20-10-8-40";
-                BallsList = GameStatus.LoadGame(path);
-            }
-            if (HighScoresButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                hs = new HighScores();
-                hs.Show();
-            }
-            if (ResetButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, DisplacementTimeGraph, EkTimeGraph, CentripetalForceGraph, BlankCircle, BlankBox);
-            }
-            if (PauseButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                GameStatus.PauseGame(ref BallsList);
-            }
-            if (DebugButton.Pressed && Input.LeftMouseJustClicked())
-            {
-                GameStatus.DebugGame();
-            }
-            /*
-            for (int a = 0; a < BallsList.Count; a++)
-            {
-                BallsList[a].Update();
-                BallsList[a] = Collisions.Ball_Wall(BallsList[a], BorderWidth, ScreenWidth, ScreenHeight);
-                for (int b = a + 1; b < BallsList.Count; b++)
-                {
-                    //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New_2(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
-                    //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
-                    Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
-                    BallsList[a] = TempTuple.Item1;
-                    BallsList[b] = TempTuple.Item2;
-                }
-                BallsList = Collisions.Ball_Pocket(BallsList[a], PocketList, BallsList, a, BlankCircle, Graveyard, ScreenWidth);
-                
-                if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
-                {
-                    BallsList[a] = Debug.PingBall(BallsList[a]);
-                    PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
-                    if (Debug.sightStatus)
+                    if (TypeBox.ValidEntry() && Player.ValidateName(TypeBox.Output))
                     {
-                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
+                        Players[0].SetName(TypeBox.Output);
+                        TypeBox.Clear();
+                    }
+                    else
+                    {
+                        TypeBox.Valid = false;
                     }
                 }
-                else
-                {
-                    //PoolCue.End = PoolCue.Start;
-                    //SightLine.End = SightLine.Start;
-                }
-                
-            }
-            */
-            for (int a = 0; a < BallsList.Count; a++)
-            {
-                Ball ballA = BallsList[a];
-                ballA.Update();
-                ballA = Collisions.Ball_Wall(ballA, BorderWidth, ScreenWidth, ScreenHeight);
-                for (int b = 0; b < BallsList.Count; b++)
-                {
-                    Ball ballB = BallsList[b];
-                    if (a == b) continue;
 
-                    bool collided;
-                    //Tuple<Ball, Ball> temp = Collisions.Ball_Ball_New(ballA, ballB, Physics.coefficient_of_restitution_ball);
-                    Tuple<Ball, Ball> temp = Collisions.Ball_Ball(ballA, ballB, out collided);
-                    BallsList[a] = temp.Item1;
-                    BallsList[b] = temp.Item2;
-                }
-
-                BallsList = Collisions.Ball_Pocket(BallsList[a], PocketList, BallsList, a, BlankCircle, Graveyard, ScreenWidth);
-
-                if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
+                if (NameBox.Output.Length > 0)
                 {
-                    Ball cueBall = BallsList[BallsList.Count() - 1];
-                    if (DisplacementMarker != cueBall.Center)
+                    if (NameBox.ValidEntry() && Player.ValidateName(TypeBox.Output))
                     {
-                        DisplacementMarker = cueBall.Center;
+                        Players[1].SetName(NameBox.Output);
+                        NameBox.Clear();
                     }
-                    BallsList[a] = Debug.PingBall(BallsList[a]);
-                    PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, cueBall.Center);
-                    if (Debug.sightStatus)
+                    else
                     {
-                        SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, cueBall.Center, PoolCue);
+                        NameBox.Valid = false;
                     }
                 }
-            }
 
-            Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
-            if (BallsList.Count + Graveyard.Count > 15)
-            {
-                Ball ball = BallsList[BallsList.Count - 1];
-                SpeedTimeGraph.Update((float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y));
-                DisplacementTimeGraph.Update(Vector2.Distance(DisplacementMarker, ball.Center));
-                EkTimeGraph.Update((float)Physics.KineticEnergy(ball.Mass, (float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y)));
-                CentripetalForceGraph.Update(Physics.CentripetalForce(ball.Velocity, ball.Radius, ball.Mass));
+                SightSelect.Update();
+                if ((SightSelect.State && !Debug.sightStatus) || (!SightSelect.State && Debug.sightStatus))
+                {
+                    Debug.sightStatus = !Debug.sightStatus;
+                }
+
+                string CompUsername = Environment.UserName;
+                if (SaveButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\";
+                    GameStatus.SaveGame(BallsList, path);
+                }
+                if (LoadButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\2019-3-20-10-8-40";
+                    BallsList = GameStatus.LoadGame(path);
+                }
+                if (HighScoresButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    hs = new HighScores();
+                    hs.Show();
+                }
+                if (ResetButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    GameStatus.ResetGame(ref BallsList, ref Graveyard, SpeedTimeGraph, DisplacementTimeGraph, EkTimeGraph, CentripetalForceGraph, BlankCircle, BlankBox);
+                }
+                if (PauseButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    GameStatus.PauseGame(ref BallsList);
+                }
+                if (DebugButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    GameStatus.DebugGame();
+                }
+                if (HelpButton.Pressed && Input.LeftMouseJustClicked())
+                {
+                    ProcessStartInfo info = new ProcessStartInfo("https://www.colorado.edu/umc/sites/default/files/attached-files/8-ball_rules_bca.pdf");
+                    Process.Start(info);
+                }
+                /*
+                for (int a = 0; a < BallsList.Count; a++)
+                {
+                    BallsList[a].Update();
+                    BallsList[a] = Collisions.Ball_Wall(BallsList[a], BorderWidth, ScreenWidth, ScreenHeight);
+                    for (int b = a + 1; b < BallsList.Count; b++)
+                    {
+                        //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New_2(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
+                        //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
+                        Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
+                        BallsList[a] = TempTuple.Item1;
+                        BallsList[b] = TempTuple.Item2;
+                    }
+                    BallsList = Collisions.Ball_Pocket(BallsList[a], PocketList, BallsList, a, BlankCircle, Graveyard, ScreenWidth);
+
+                    if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
+                    {
+                        BallsList[a] = Debug.PingBall(BallsList[a]);
+                        PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
+                        if (Debug.sightStatus)
+                        {
+                            SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
+                        }
+                    }
+                    else
+                    {
+                        //PoolCue.End = PoolCue.Start;
+                        //SightLine.End = SightLine.Start;
+                    }
+
+                }
+                */
+                for (int a = 0; a < BallsList.Count; a++)
+                {
+                    Ball ballA = BallsList[a];
+                    ballA.Update();
+                    ballA = Collisions.Ball_Wall(ballA, BorderWidth, ScreenWidth, ScreenHeight);
+                    for (int b = 0; b < BallsList.Count; b++)
+                    {
+                        Ball ballB = BallsList[b];
+                        if (a == b) continue;
+
+                        bool collided;
+                        //Tuple<Ball, Ball> temp = Collisions.Ball_Ball_New(ballA, ballB, Physics.coefficient_of_restitution_ball);
+                        Tuple<Ball, Ball> temp = Collisions.Ball_Ball(ballA, ballB, out collided);
+                        BallsList[a] = temp.Item1;
+                        BallsList[b] = temp.Item2;
+                    }
+                    bool pottedStat = Collisions.Ball_Pocket(BallsList[a], PocketList, ref BallsList, a, BlankCircle, Graveyard, ScreenWidth, ref PlacingCueBall);
+
+                    if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
+                    {
+                        Ball cueBall = BallsList[BallsList.Count() - 1];
+                        if (!PlacingCueBall)
+                        {
+                            if (DisplacementMarker != cueBall.Center)
+                            {
+                                DisplacementMarker = cueBall.Center;
+                            }
+                            BallsList[a] = Debug.PingBall(BallsList[a]);
+                            PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, cueBall.Center);
+                            if (Debug.sightStatus)
+                            {
+                                SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, cueBall.Center, PoolCue);
+                            }
+                        }
+                        else
+                        {
+                            GamePlay.PlaceCueBall(ref cueBall, Input.mousePosition, ref PlacingCueBall);
+                        }
+                    }
+                    if (pottedStat)
+                    {
+                        GamePlay.Potted(ref Players, CurrentPlayer, BallsList[a], ref EndGame);
+                    }
+                    Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
+                }
+
+                //Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
+                if (BallsList.Count + Graveyard.Count > 15)
+                {
+                    Ball ball = BallsList[BallsList.Count - 1];
+                    SpeedTimeGraph.Update((float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y));
+                    DisplacementTimeGraph.Update(Vector2.Distance(DisplacementMarker, ball.Center));
+                    EkTimeGraph.Update((float)Physics.KineticEnergy(ball.Mass, (float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y)));
+                    CentripetalForceGraph.Update(Physics.CentripetalForce(ball.Velocity, ball.Radius, ball.Mass));
+                }
             }
             base.Update(gameTime);
         }
@@ -360,6 +382,12 @@ namespace MonoGamePool1
             Graphics.DrawPockets(spriteBatch, OuterPockets);
             Graphics.DrawBoard(spriteBatch);
             Graphics.DrawPockets(spriteBatch, PocketList);
+
+            if (PlacingCueBall)
+            {
+                spriteBatch.Draw(BlankBox, new Rectangle(274, BorderWidth, 1, ScreenHeight - 2 * BorderWidth), Color.LightGray);
+            }
+
             Graphics.DrawBalls(spriteBatch, BallsList);
             Graphics.DrawScoreBox(spriteBatch, Graveyard);
 
@@ -369,19 +397,19 @@ namespace MonoGamePool1
             ResetButton.Draw(spriteBatch);
             PauseButton.Draw(spriteBatch);
             DebugButton.Draw(spriteBatch);
+            HelpButton.Draw(spriteBatch);
 
             TypeBox.Draw(spriteBatch);
             NameBox.Draw(spriteBatch);
 
             SightSelect.Draw(spriteBatch);
+            string sightText = "Ina";
             if (Debug.sightStatus)
             {
-                spriteBatch.DrawString(SightSelect.Font, "Sight Line Active", new Vector2(SightSelect.Origin.X + SightSelect.Dimensions.X + 10, SightSelect.Origin.Y), Color.Black, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0);
+                sightText = "A";
             }
-            else
-            {
-                spriteBatch.DrawString(SightSelect.Font, "Sight Line Inactive", new Vector2(SightSelect.Origin.X + SightSelect.Dimensions.X + 10, SightSelect.Origin.Y), Color.Black, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0);
-            }
+            spriteBatch.DrawString(SightSelect.Font, "Sight Line " + sightText + "ctive", new Vector2(SightSelect.Origin.X + SightSelect.Dimensions.X + 10, SightSelect.Origin.Y), Color.Black, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0);
+
 
             RowsBox.Draw(spriteBatch);
             spriteBatch.DrawString(RowsBox.Font, "Rows", new Vector2(RowsBox.Origin.X + RowsBox.Dimensions.X + 15, RowsBox.Origin.Y), Color.Black);
@@ -393,14 +421,14 @@ namespace MonoGamePool1
 
             if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
             {
-                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.Pointer);               
+                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.LinePos);               
             }
             if (NameBox.Pressed && NameBox.Timer < TextBox.BlinkTimer / 2)
             {
                 NameBox.DrawBlinkingKeyLine(spriteBatch, NameBox.Chars.GetLength());                
             }
             //Graphics.DrawCushionDiagonals(spriteBatch, DiagonalLines, BlankBox);
-            if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0)
+            if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0 && !PlacingCueBall && !EndGame)
             {
                 PoolCue.Draw(spriteBatch);
                 if (Debug.sightStatus)
@@ -414,22 +442,29 @@ namespace MonoGamePool1
             for (int x = 0; x < Players.Count; x++)
             {
                 Vector2 origin = new Vector2(50, 570 + 40 * x);
-                //spriteBatch.Draw(spriteBatch, new Rectangle(origin.X, origin.Y, ));
                 spriteBatch.DrawString(TextBoxFont, Players[x].Name, origin, Color.Black);
+            }
+            if (!EndGame)
+            {
+                spriteBatch.DrawString(TextBoxFont, Players[CurrentPlayer].Name + "'s turn", new Vector2(ScreenWidth * 0.43f, ScreenHeight + 3), Players[CurrentPlayer].Colour);
+                spriteBatch.DrawString(TextBoxFont, Players[CurrentPlayer].Shots + " shots remaining", new Vector2(ScreenWidth * 0.2f, ScreenHeight + 3), Players[CurrentPlayer].Colour);
+            }
+            else
+            {
+                spriteBatch.DrawString(TextBoxFont, "GAME OVER", new Vector2(ScreenWidth * 0.43f, ScreenHeight + 3), Color.Black);
             }
 
 
             watch.Stop();
 
             //Draw the amount of milliseconds it takes to draw everything else (16.66... ms or less is 60fps)
-            if (Debug.speedTest)
+            if (Debug.speedTest && !EndGame)
             {
-                spriteBatch.DrawString(font, watch.Elapsed.TotalMilliseconds.ToString("N3") + "ms", new Vector2(4), Color.White);
+                spriteBatch.DrawString(font, watch.Elapsed.TotalMilliseconds.ToString("N3") + "ms", new Vector2(72, 11), Color.White);
             }
 
             spriteBatch.End();
             base.Draw(gameTime);
-            //Update(gameTime);
 
             //1046 x 548
             //ForestGreen and SaddleBrown
@@ -438,26 +473,13 @@ namespace MonoGamePool1
     }
 }
 
-//Highscores entered into database  X
-//Names checked against previous names
 //Passwords entered (relational database and hashing)
-//Use textbox stack to enter text
-//Sort scores (sorting algorithms - work out which is best)
 
 //File path for saving to file as constant
 //Use folders for days? - File selection for time in days
 
 //Add trig again
 //SORT COLLISIONS
-
-//Lines as objects?
-
-//MiniGraphs have Queues in them - use Physics equations and Queues (A-Level Standard) - engineering circular motion suvat & Impulse, Torque?
-
-//BACKTRACK SEARCH BOX - reduce complexity to make it a stack again (no extra stack functions)
-//NumBox chars R -> L?
-
-//Stack and Queue for textbox - limited letter range in queue, extras put onto start and end stacks
 
 //MVC (Model-Controller-View)
 

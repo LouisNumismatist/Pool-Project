@@ -25,7 +25,7 @@ namespace MonoGamePool1
 
         private void HighScores_Load(object sender, EventArgs e)
         {
-            HighScoresList = HighScoresSorting.GetHighScores(); //josh tm
+            HighScoresList = HighScoresSorting.GetHighScores();
             WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
             //HighScoresList = HighScoresSorting.IdentifyCommand(0, true);
         }

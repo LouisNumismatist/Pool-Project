@@ -23,10 +23,10 @@ namespace MonoGamePool1
             ID = id;
             Name = name;
             Shots = 1;
-            Colour = Color.White;
+            Colour = Color.Black;
         }
 
-        public static  bool ValidateName(string name)
+        public static bool ValidateName(string name)
         {
             bool Valid = true;
             if (name.Length < 11)
@@ -46,9 +46,25 @@ namespace MonoGamePool1
             }
             return Valid;
         }
-        public void UpdateName(string newName)
+        public void SetName(string newName)
         {
             Name = newName;
+        }
+        /*public string GetName()
+        {
+            return Name;
+        }*/
+        public void SetColour(Color colour)
+        {
+            Colour = colour;
+        }
+        /*public Color GetColour()
+        {
+            return Colour;
+        }*/
+        public void IncreaseShots(int num)
+        {
+            Shots += num;
         }
     }
 }

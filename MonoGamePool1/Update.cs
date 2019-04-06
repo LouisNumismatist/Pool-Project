@@ -37,11 +37,16 @@ namespace MonoGamePool1
             return new DiagonalLine(SightLine.Thickness, CueBall, SightLine.End, SightLine.Colour, true);
         }
 
-        public static void UpdateCurrentPlayer(ref int currentplayer, List<Player> players)
+        public static void UpdateCurrentPlayer(ref int currentPlayer, List<Player> players)
         {
-            if (players[currentplayer].Shots == 0)
+            players[currentPlayer].Shots -= 1;
+            if (players[currentPlayer].Shots == 0)
             {
-                currentplayer = (currentplayer + 1) % 2;
+                currentPlayer = 1 - currentPlayer;
+            }
+            if (players[currentPlayer].Shots == 0)
+            {
+                players[currentPlayer].Shots += 1;
             }
         }
     }

@@ -41,7 +41,10 @@ namespace MonoGamePool1
         public T Pop()
         {
             T a = Peek();
-            Pointer--;
+            if (Pointer > 0)
+            {
+                Pointer--;
+            }
             return a;
         }
 

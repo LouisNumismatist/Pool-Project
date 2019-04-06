@@ -27,16 +27,30 @@ namespace MonoGamePool1
 
         public static bool Potted(ref List<Player> Players, int PlayerTurn, Ball ball, ref bool EndGame)
         {
+            Console.WriteLine(Players[PlayerTurn].Colour.ToString());
             if (ball.Colour == Color.Black) //End Game if 8 ball potted
             {
                 EndGame = true;
                 return false;
             }
-            else if (ball.Colour == Players[PlayerTurn].Colour) //Add turn to current player if own ball potted
+            else if (ball.Colour == Players[PlayerTurn].Colour | Players[PlayerTurn].Colour == Color.Black) //Add turn to current player if own ball potted
             {
+                Console.WriteLine(Players[PlayerTurn].Colour.ToString());
                 if (Players[PlayerTurn].Shots < 2)
                 {
                     Players[PlayerTurn].Shots += 1;
+                }
+                if (Players[PlayerTurn].Colour == Color.Black)
+                {
+                    Players[PlayerTurn].SetColour(ball.Colour);
+                    if (ball.Colour == Color.Yellow)
+                    {
+                        Players[1 - PlayerTurn].SetColour(Color.Red);
+                    }
+                    else
+                    {
+                        Players[1 - PlayerTurn].SetColour(Color.Yellow);
+                    }
                 }
                 return true;
             }
@@ -47,13 +61,16 @@ namespace MonoGamePool1
             }
         }
 
-        public static void PlaceCueBall(ref Ball CueBall, Vector2 mousePosition)
+        public static void PlaceCueBall(ref Ball CueBall, Vector2 mousePosition, ref bool PlacingCueBall)
         {
-            if (mousePosition.Y > Game1.BorderWidth && mousePosition.X < Game1.ScreenHeight - Game1.BorderWidth)
+            if (mousePosition.Y > Game1.BorderWidth + CueBall.Radius && mousePosition.Y < Game1.ScreenHeight - Game1.BorderWidth - CueBall.Radius)
             {
-                
+                CueBall.Center.Y = mousePosition.Y;
+            }
+            if (Input.LeftMouseJustClicked())
+            {
+                PlacingCueBall = false;
             }
         }
-
     }
 }

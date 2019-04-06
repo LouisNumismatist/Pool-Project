@@ -424,42 +424,33 @@ namespace MonoGamePool1
             return a;
         }
 
-        public static List<Ball> Ball_Pocket(Ball a, List<Pocket> PocketList, List<Ball> BallsList, int index, Texture2D CueBall, List<Ball> Graveyard, int ScreenWidth)
+        public static bool Ball_Pocket(Ball a, List<Pocket> PocketList, ref List<Ball> BallsList, int index, Texture2D CueBall, List<Ball> Graveyard, int ScreenWidth, ref bool CueBallPlacing)
         {
-            //int Tracker = 0;
+            bool potted = false;
             foreach (Pocket p in PocketList)
             {
                 if (Vector2.Distance(a.Center, p.Center) <= PocketList[0].Radius)
                 {
+                    potted = true;
+                    //Cue Potted
                     if (a.ID == 15)
                     {
                         BallsList[index] = new Ball(15, new Vector2(274, 274), a.Radius, Vector2.Zero, Vector2.Zero, a.Colour, false, 15);
-
-                        //a.Center = new Vector2(274, 274);
-                        //a.Velocity = new Vector2(0, 0);
-                        //return 0; //Cue Potted
+                        CueBallPlacing = true;
                     }
-                    /*if (a.ID == 6)
-                    {
-                        BallsList.Remove(a);
-                        for (int i = 0; i < BallsList.Count; i++)
-                        {
-                            BallsList[i].Velocity = Vector2.Zero;
-                        }
-                        //return 1; //Eight Ball Potted
-                    }*/
                     else
                     {
-                        if (a.ID != 6)
+                        //Red or Yellow Ball Potted
+                        if (a.Colour != Color.Black)
                         {
                             Graveyard.Add(new Ball(a.ID, new Vector2((ScreenWidth / 2 - 25 * 13) + (Graveyard.Count) * 50, 600), a.Radius, Vector2.Zero, Vector2.Zero, a.Colour, false, a.ID));
                         }
                         BallsList.Remove(a);
-                        //return 2; //Red or Yellow Ball Potted
                     }
+                    //GamePlay.Potted(ref Game1.Players, Game1.CurrentPlayer, a, ref Game1.EndGame);
                 }
             }
-            return BallsList;
+            return potted;
         }
 
         public static bool BallsTouching(Vector2 a, Vector2 b, float Rad1, float Rad2, out float depth)

@@ -13,7 +13,6 @@ namespace MonoGamePool1
         public static bool canPingBall = true;
         public static bool visualCoords = false;
         public static bool sightStatus = true;
-        //public static string color = "green";
         public static float speed = 11.75f; //11.75
         public static int rows = 5;
         public static int ballBorderWidth = 2;

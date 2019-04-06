@@ -18,14 +18,6 @@ namespace MonoGamePool1
         public Color Colour;
         public Texture2D Texture = Game1.BlankCircle;
 
-        /*public Circle(int id, Vector2 center, float radius, Color colour)
-        {
-            ID = id;
-            Center = center;
-            Radius = radius;
-            Colour = colour;
-        }*/
-
         public void Draw(SpriteBatch spriteBatch)
         {
             float radius = Radius;
@@ -33,6 +25,10 @@ namespace MonoGamePool1
             int x = (int)(Center.X - radius);
             int y = (int)(Center.Y - radius);
             spriteBatch.Draw(Texture, new Rectangle(x, y, diameter, diameter), Colour);
+            if (Colour == Color.Black && !Debug.showBallNumbers && diameter == Game1.BallDiam)
+            {
+                spriteBatch.DrawString(Game1.TextBoxFont, "8", new Vector2(Center.X - Radius + 6, Center.Y - radius + 2), Color.White);
+            }
         }
     }
     /// <summary>
