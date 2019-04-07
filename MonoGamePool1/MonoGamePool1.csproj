@@ -45,7 +45,6 @@
     <Compile Include="Button.cs" />
     <Compile Include="Collisions.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="FileSaving.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GamePlay.cs" />

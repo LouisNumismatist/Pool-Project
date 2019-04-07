@@ -37,13 +37,6 @@ namespace MonoGamePool1
             {
                 Max = value;
             }
-            //Console.Write(Max + ": ");
-            /*foreach(float x in Values.GetContents(Values))
-            {
-                Console.Write(x + ", ");
-            }*/
-            //Console.WriteLine("");
-            //Console.WriteLine(Values.GetContents(Values));
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -54,7 +47,6 @@ namespace MonoGamePool1
             spriteBatch.DrawString(Game1.TextBoxFont, ((int)(Max + 0.5f)).ToString(), new Vector2(Origin.X, Origin.Y - (LetterHeight + 2)), Color.White);
             spriteBatch.DrawString(Game1.TextBoxFont, "0", new Vector2(Origin.X, Origin.Y + Dimensions.Y + 2), Color.White);
             spriteBatch.DrawString(Game1.TextBoxFont, Label, new Vector2(Origin.X + 2 * LetterWidth, Origin.Y + Dimensions.Y + 2), Color.White, 0, Vector2.Zero, 0.8f, SpriteEffects.None, 0);
-            //Console.WriteLine(Values.Peek(Values));
             float[] items = Values.GetContents();
             for (int x = 0; x < Values.GetTail(); x++)
             {

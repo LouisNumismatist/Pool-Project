@@ -50,18 +50,12 @@ namespace MonoGamePool1
         {
             Name = newName;
         }
-        /*public string GetName()
-        {
-            return Name;
-        }*/
+
         public void SetColour(Color colour)
         {
             Colour = colour;
         }
-        /*public Color GetColour()
-        {
-            return Colour;
-        }*/
+
         public void IncreaseShots(int num)
         {
             Shots += num;

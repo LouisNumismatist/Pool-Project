@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MonoGamePool1
 {
     /// <summary>
-    /// My own implementation of a circular queue data structure, used in the MiniGraphs mainly
+    /// My own implementation of a queue data structure, used in the MiniGraphs mainly
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Queue<T>
@@ -39,7 +39,7 @@ namespace MonoGamePool1
             {
                 Tail = 0;
             }
-            
+
             Contents[Tail] = item;
             Tail++;
             if (Tail >= Contents.Length)
@@ -61,32 +61,22 @@ namespace MonoGamePool1
 
         public void Clear()
         {
-            Head = 0;
-            Tail = 0;
+            Head = Tail = 0;
         }
 
         public bool IsEmpty()
         {
-            if (Head == Tail)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (Head == Tail);
         }
 
         public T Peek()
         {
             if (Tail > 0 && Tail < Contents.Length)
             {
-                //Console.WriteLine("1 Tail " + Tail);
                 return Contents[Tail - 1];
             }
             else
             {
-                //Console.WriteLine("2 Tail " + Tail);
                 return default(T);
             }
         }

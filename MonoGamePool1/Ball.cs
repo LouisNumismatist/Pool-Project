@@ -78,17 +78,9 @@ namespace MonoGamePool1
             }
             if (!flag)
             {
-                //a.Velocity += a.Velocity * a.Acceleration;
-                //a.Velocity += a.Acceleration;
                 Center += Velocity;
-                //Graphics.WriteBall(a);
             }
             Velocity *= 1 - Physics.coefficient_of_rolling_resistance_cloth;
-            //Velocity *= 0.992f;
-            //return this;
-            //return a;
-            //a.Velocity = Vector2.Add(a.Velocity, Vector2.Multiply(a.Velocity, a.Acceleration));
-            //a.Center = Vector2.Add(a.Center, a.Velocity);
         }
 
         public void Write()

@@ -58,9 +58,6 @@ namespace MonoGamePool1
         public static int lastSort = 0;
         public static bool asc = true;
 
-        //public static List<HighScore> HighScoresList = new List<HighScore>(0);
-
-
         public static List<HighScore> GetHighScores()
         {
             List<HighScore> HighScoresList = new List<HighScore>();
@@ -98,7 +95,6 @@ namespace MonoGamePool1
                 }
                 HighScoresList = reversed;
             }
-            //return HighScoresList;
         }
 
         public static List<HighScore> IdentifyCommand(int type, bool direction, List<HighScore> HighScoresList)

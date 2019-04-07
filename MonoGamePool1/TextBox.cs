@@ -53,7 +53,6 @@ namespace MonoGamePool1
             return press;
         }
 
-        
         public void UpdatePressed()
         {
             if (Input.MouseWithinArea(Origin, new Vector2(Origin.X + Dimensions.X, Origin.Y + Dimensions.Y)) && Input.LeftMouseJustClicked())
@@ -98,213 +97,7 @@ namespace MonoGamePool1
             }
         }
     }
-    /// <summary>
-    /// Textbox allowing for scrolling through characters as uses a list structure to store contents
-    /// </summary>
-    public class RegTextBox : TextBox
-    {
-        public List<string> Chars;
-        public int Pointer;
-        public int LinePos;
 
-        public RegTextBox(Vector2 origin, SpriteFont font, int maxchars, string temptext)
-        {
-            Origin = origin;
-            Dimensions = new Vector2((maxchars + 0.4f) * LetterWidth, LetterHeight);
-            Chars = new List<string>();
-            Pointer = 0;
-            Colour = Color.Red;
-            Font = font;
-            Pressed = false;
-            Timer = 0;
-            MaxChars = maxchars;
-            Border = 2;
-            LinePos = 0;
-            TempText = temptext;
-            Valid = true;
-            Output = "";
-        }
-
-        public void IncreaseLinePos()
-        {
-            if (LinePos < MaxChars)
-            {
-                LinePos += 1;
-            }
-            else
-            {
-                Pointer += 1;
-            }
-        }
-
-        public void DecreaseLinePos()
-        {
-            if (LinePos > 0)
-            {
-                LinePos -= 1;
-            }
-            else if (Pointer > 0)
-            {
-                Pointer -= 1;
-            }
-        }
-
-        public void IdentifyCommand(string com)
-        {
-            CheckCaps(com);
-            MovePointer(com);
-
-            if (com == "Enter" | com == "Return")
-            {
-                if (Chars.Count > 0)
-                {
-                    if (Chars.Count > 0 && Chars.Count < MaxChars - 2)
-                    {
-                        foreach (string letter in Chars)
-                        {
-                            Output += letter;
-                        }
-                        Chars = new List<string>();
-                    }
-                    else
-                    {
-                        Valid = false;
-                        Clear();
-                    }
-                }
-            }
-            if (com == "Space") //Spacebar (32)
-            {
-                Chars.Insert(Pointer + LinePos, " ");
-                IncreaseLinePos();
-            }
-            else if (com == "Back" && Pointer + LinePos > 0) //Backspace (08)
-            {
-                DecreaseLinePos();
-                Chars.RemoveAt(Pointer + LinePos);
-                
-            }
-            else if (com == "Delete" && Pointer + LinePos < Chars.Count())
-            {
-                Chars.RemoveAt(Pointer + LinePos);
-            }
-            else if (NumPadKeys.Contains(com))
-            {
-                Chars.Insert(Pointer + LinePos, NumPadKeys.IndexOf(com).ToString());
-                IncreaseLinePos();
-            }
-            else if (DKeys.Contains(com))
-            {
-                Chars.Insert(Pointer + LinePos, DKeys.IndexOf(com).ToString());
-                IncreaseLinePos();
-            }
-            Pressed = Exit(com);
-        }
-
-        public void MovePointer(string com)
-        {
-            if (com == "Left")
-            {
-                DecreaseLinePos();
-            }
-            else if (com == "Right")
-            {
-                IncreaseLinePos();
-            }
-        }
-
-        public void UpdateLetters()
-        {
-            //Gets list of keys clicked by the user in that frame
-            List<string> letters = Input.IdentifyKeysJustClicked();
-
-            foreach (string letter in letters)
-            {
-                if (letter.Length == 1)
-                {
-                    if (General.InAlpha(letter) && Pointer + LinePos < MaxChars)
-                    {
-                        if (CapsLock || TempCapsLock) //CapsLock and TempCapsLock (shift key held) check
-                        {
-                            Chars.Insert(Pointer + LinePos, letter);
-                        }
-                        else
-                        {
-                            Chars.Insert(Pointer + LinePos, letter.ToLower());
-                        }
-                        IncreaseLinePos();
-                        Console.WriteLine(Pointer + " " + LinePos);
-                    }
-                }
-                IdentifyCommand(letter);
-            }
-        }
-
-        public void AddChar(string com)
-        {
-            if (Pointer + LinePos < Chars.Count())
-            {
-                Chars.Insert(Pointer + LinePos, com);
-            }
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            Color color;
-            //Choose border colour depending on whether clicked or not
-            if (Pressed)
-            {
-                color = Colour;
-            }
-            else
-            {
-                color = Color.Black;
-            }
-            //Draw textbox boxes
-            spriteBatch.Draw(Texture, new Rectangle((int)Origin.X - Border, (int)Origin.Y - Border, (int)Dimensions.X + Border * 2, (int)Dimensions.Y + Border * 2), color);
-            spriteBatch.Draw(Texture, new Rectangle((int)Origin.X, (int)Origin.Y, (int)Dimensions.X, (int)Dimensions.Y), Color.White);
-
-            if (Chars.Count > 0 | Pressed)
-            {
-                //Draw all letters player has entered
-                DrawLetters(spriteBatch);
-            }
-            else
-            {
-                //Write temp text
-                spriteBatch.DrawString(Font, TempWrite(), Origin, Color.Gray);
-            }
-        }
-
-        public void DrawLetters(SpriteBatch spriteBatch)
-        {
-            if (Chars.Count() <= MaxChars)
-            {
-                //Textbox doesn't need extension
-                for (int x = 0; x < Chars.Count(); x++)
-                {
-                    spriteBatch.DrawString(Font, Chars[x], new Vector2(Origin.X + x * LetterWidth + 1, Origin.Y), Color.Black);
-                }
-            }
-            else
-            {
-                //Textbox needs extension
-                for (int x = 0; x < MaxChars; x++)
-                {
-                    int y = x + Chars.Count() - MaxChars;
-                    spriteBatch.DrawString(Font, Chars[y], new Vector2(Origin.X + x * LetterWidth + 1, Origin.Y), Color.Black);
-                }
-            }
-        }
-
-        public void Clear()
-        {
-            //Resets textbox when item successfully entered
-            Chars.Clear();
-            Output = "";
-            Pointer = LinePos = 0;
-        }
-    }
     /// <summary>
     /// Textbox which uses a stack structure to store and alter data
     /// </summary>
@@ -331,7 +124,7 @@ namespace MonoGamePool1
         public void IdentifyCommand(string com)
         {
             CheckCaps(com);
-            if (com == "Enter" | com == "Return")
+            if (com == "Enter" || com == "Return")
             {
                 if (Chars.GetLength() > 0)
                 {
@@ -409,7 +202,7 @@ namespace MonoGamePool1
             spriteBatch.Draw(Texture, new Rectangle((int)Origin.X - Border, (int)Origin.Y - Border, (int)Dimensions.X + Border * 2, (int)Dimensions.Y + Border * 2), color);
             spriteBatch.Draw(Texture, new Rectangle((int)Origin.X, (int)Origin.Y, (int)Dimensions.X, (int)Dimensions.Y), Color.White);
 
-            if (Chars.GetLength() > 0 | Pressed)
+            if (Chars.GetLength() > 0 || Pressed)
             {
                 DrawLetters(spriteBatch);
             }

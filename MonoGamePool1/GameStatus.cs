@@ -14,7 +14,6 @@ namespace MonoGamePool1
     {
         public static List<Vector2> Velocities = new List<Vector2>();
 
-
         public static void SaveGame(List<Ball> BallsList, string filePath)
         {
             string moment = FileSaving.CurrentMoment();

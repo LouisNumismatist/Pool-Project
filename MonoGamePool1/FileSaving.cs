@@ -27,11 +27,6 @@ namespace MonoGamePool1
             return File.ReadAllLines(filePath);
         }
 
-        /*public static void createFile(string filePath, string fileName)
-        {
-
-        }*/
-
         public static string ObjectToString(Ball a)
         {
             Dictionary<Color, string> Colours = new Dictionary<Color, string>()
@@ -59,9 +54,6 @@ namespace MonoGamePool1
             int id = Convert.ToInt32(props[0]);
             Vector2 center = new Vector2((float)Convert.ToDecimal(props[1]), (float)Convert.ToDecimal(props[2]));
             int radius = Convert.ToInt32(props[3]);
-            //Vector2 velocity = new Vector2((float)Convert.ToDecimal(props[4]), (float)Convert.ToDecimal(props[5]));
-            //Vector2 acceleration = new Vector2((float)General.ToExponential(props[6]), (float)General.ToExponential(props[7]));
-            //Console.WriteLine(props[8]);
             Color colour = Colours[props[4]];
             bool collision = Convert.ToBoolean(props[5]);
             int prevball = Convert.ToInt32(props[6]);
@@ -75,4 +67,3 @@ namespace MonoGamePool1
         }
     }
 }
-//Selection From File for higher marks (is GraveYard?)

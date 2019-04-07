@@ -29,15 +29,7 @@ namespace MonoGamePool1
     /// </summary>
     public class SelectBox : Box
     {
-
-        //public int Border;
         public string Text;
-
-        /*public virtual void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.DrawString(Font, Text, Origin, Colour);
-        }*/
-
     }
     /// <summary>
     /// Buttons can be clicked by user and are used for changing gamestate options
@@ -54,25 +46,13 @@ namespace MonoGamePool1
             Colour = colour;
             Font = font;
             Pressed = false;
-            //Border = 2;
         }
-
-        /*public static Button InitialiseButton(Vector2 Origin, String text, SpriteFont font)
-        {
-            return new Button(Origin, new Vector2(1 + 11 * text.Length, 20), text, Color.Blue, font, false, 2);
-        }*/
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, new Rectangle((int)Origin.X - Border, (int)Origin.Y - Border * 2, (int)Dimensions.X + Border * 2, (int)Dimensions.Y + Border * 2), Colour);
             spriteBatch.DrawString(Font, Text, Origin, Color.White);
         }
-
-
-        /*public static bool IsClicked()
-        {
-            return true;
-        }*/
 
         public void Update(Vector2 MousePosition)
         {
@@ -109,18 +89,7 @@ namespace MonoGamePool1
             Max = max;
             Left = new Button(origin, "<", Color.Red, font);
             Right = new Button(new Vector2(origin.X + digits * LetterWidth - LetterWidth + 4 * Border, origin.Y), ">", Color.Green, font);
-            //Border = border;
         }
-
-        /*public NumBox InitialiseNumBox(Vector2 origin, SpriteFont font, int max)
-        {
-            int digits = (int)Math.Log10(max + 1) + 3;
-            //int border = 2;
-            Console.WriteLine(digits);
-            Button left = new Button(origin, "<", Color.Red, font);
-            Button right = new Button(new Vector2(origin.X + digits * left.LetterWidth - left.LetterWidth + 4 * Border, origin.Y), ">", Color.Green, font);
-            return new NumBox(origin, new Vector2(digits * left.LetterWidth, left.LetterHeight), Color.Blue, font, max, left, right);
-        }*/
 
         public void Update()
         {
@@ -140,7 +109,6 @@ namespace MonoGamePool1
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(BlankBox, new Rectangle((int)Origin.X - BorderWidth, (int)Origin.Y - BorderWidth, (int)Dimensions.X + 2 * BorderWidth, (int)Dimensions.Y + 2 * BorderWidth), Color.Black); //Border
             Left.Draw(spriteBatch);
             spriteBatch.Draw(Texture, new Rectangle((int)Origin.X + LetterWidth + Border, (int)Origin.Y - Border * 2, (int)Dimensions.X + 2 * (Border - LetterWidth), LetterHeight + 2 * Border), Colour); //Middle TextBox
             spriteBatch.DrawString(Font, Debug.rows.ToString(), new Vector2((int)Origin.X + LetterWidth + 3 * Border, (int)Origin.Y - Border), Color.White); //Text (number)

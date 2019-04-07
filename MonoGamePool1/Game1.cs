@@ -44,7 +44,6 @@ namespace MonoGamePool1
         public List<Ball> Graveyard = new List<Ball>();
         public List<Ball> RecentlyPotted = new List<Ball>();
         public List<Button> ButtonList = new List<Button>();
-        //public List<DiagonalLine> DiagonalLines = new List<DiagonalLine>();
         public static Color FirstTapped = Color.White;
 
         public static DiagonalLine PoolCue;
@@ -58,7 +57,7 @@ namespace MonoGamePool1
         public static Button DebugButton;
         public static Button HelpButton;
 
-        public static RegTextBox TypeBox;
+        public static StackTextBox TypeBox;
         public static StackTextBox NameBox;
 
         public static NumBox RowsBox;
@@ -70,13 +69,11 @@ namespace MonoGamePool1
         public static string Player1Name = "Player 1";
         public static string Player2Name = "Player 2";
         public static int CurrentPlayer = 0;
-        public static Ball LastBall;
         public static SwitchBox SightSelect;
         public static HighScores hs;
 
         public static readonly Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D> { { "Circle", BlankCircle }, { "Box", BlankBox } };
 
-        //NEWTONSOFT
         public Game1()
         {
             instance = this;
@@ -99,23 +96,18 @@ namespace MonoGamePool1
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
             Vector2 origin = new Vector2(174, 274);
 
             Init.InitialiseBalls(ref BallsList, BlankCircle);
             Init.InitialisePockets(ref OuterPockets, 26, Color.LightGray);
             Init.InitialisePockets(ref PocketList, 22, Color.Black);
-            //PoolCue = Init.InitialisePoolCue();
-            //SightLine = Init.InitialiseSightLine();
             PoolCue = new DiagonalLine(5, origin, new Vector2(ScreenWidth, 274), Color.DarkOrange, true);
-            SightLine = new DiagonalLine(3, origin, new Vector2(274, 274), Color.Sienna, false); // - (5 / 2)
+            SightLine = new DiagonalLine(3, origin, new Vector2(274, 274), Color.Sienna, false);
             string tempString = FileSaving.ObjectToString(BallsList[0]);
-            //Ball tempBall = FileSaving.StringToObject(tempString, BallsDict);
             SaveButton = new Button(new Vector2(ScreenWidth + 230, 30), "SAVE", Color.Blue, font);
             LoadButton = new Button(new Vector2(ScreenWidth + 230 + 66, 30), "LOAD", Color.Blue, font);
-            HighScoresButton = new Button(new Vector2(ScreenWidth + 230, 60), "HIGHSCORES", Color.Blue, font); //Same row
+            HighScoresButton = new Button(new Vector2(ScreenWidth + 230, 60), "HIGHSCORES", Color.Blue, font);
             ResetButton = new Button(new Vector2(ScreenWidth + 230 + 66, 90), "RESET", Color.Blue, font);
             PauseButton = new Button(new Vector2(ScreenWidth + 230, 90), "PAUSE", Color.Blue, font);
             DebugButton = new Button(new Vector2(ScreenWidth + 230, 120),"DEBUG", Color.Blue, font);
@@ -123,7 +115,7 @@ namespace MonoGamePool1
 
             RowsBox = new NumBox(new Vector2(ScreenWidth + 230, 180), TextBoxFont, 14);
 
-            TypeBox = new RegTextBox(new Vector2(ScreenWidth + 230, 210), TextBoxFont, 14, Player1Name + ":");
+            TypeBox = new StackTextBox(new Vector2(ScreenWidth + 230, 210), TextBoxFont, 14, Player1Name + ":");
             NameBox = new StackTextBox(new Vector2(ScreenWidth + 230, 240), TextBoxFont, 14, Player2Name + ":");
 
             SightSelect = new SwitchBox(new Vector2(ScreenWidth + 235, 270), TextBoxFont);
@@ -138,8 +130,7 @@ namespace MonoGamePool1
 
             System.Speech.Synthesis.SpeechSynthesizer speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
 
-            //speechSynthesizer.Speak("Welcome to eight ball pool. Please enter your names in the text box below");
-            //speechSynthesizer.Speak("Yoyo. Play the pool, yoyo.");
+            speechSynthesizer.SpeakAsync("Welcome to eight ball pool. Please enter your names in the text box below");
         }
 
         /// <summary>
@@ -149,8 +140,6 @@ namespace MonoGamePool1
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            //Tuple<Color, string> TextureTuple = Debug.ChangeTextures();
-
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             PixelBox = new Texture2D(graphics.GraphicsDevice, 1, 1);
@@ -160,9 +149,6 @@ namespace MonoGamePool1
 
             font = Content.Load<SpriteFont>("EndGameFont");
             TextBoxFont = Content.Load<SpriteFont>("EqualSpacedText");
-
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -186,7 +172,7 @@ namespace MonoGamePool1
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-            // TODO: Add your update logic here
+
             if (!EndGame)
             {
                 SaveButton.Update(Input.mousePosition);
@@ -216,25 +202,25 @@ namespace MonoGamePool1
                     if (TypeBox.ValidEntry() && Player.ValidateName(TypeBox.Output))
                     {
                         Players[0].SetName(TypeBox.Output);
-                        TypeBox.Clear();
                     }
                     else
                     {
                         TypeBox.Valid = false;
                     }
+                    TypeBox.Clear();
                 }
 
                 if (NameBox.Output.Length > 0)
                 {
-                    if (NameBox.ValidEntry() && Player.ValidateName(TypeBox.Output))
+                    if (NameBox.ValidEntry() && Player.ValidateName(NameBox.Output))
                     {
                         Players[1].SetName(NameBox.Output);
-                        NameBox.Clear();
                     }
                     else
                     {
                         NameBox.Valid = false;
                     }
+                    NameBox.Clear();
                 }
 
                 SightSelect.Update();
@@ -276,38 +262,7 @@ namespace MonoGamePool1
                     ProcessStartInfo info = new ProcessStartInfo("https://www.colorado.edu/umc/sites/default/files/attached-files/8-ball_rules_bca.pdf");
                     Process.Start(info);
                 }
-                /*
-                for (int a = 0; a < BallsList.Count; a++)
-                {
-                    BallsList[a].Update();
-                    BallsList[a] = Collisions.Ball_Wall(BallsList[a], BorderWidth, ScreenWidth, ScreenHeight);
-                    for (int b = a + 1; b < BallsList.Count; b++)
-                    {
-                        //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New_2(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
-                        //Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball_New(BallsList[a], BallsList[b], Physics.coefficient_of_restitution_ball);
-                        Tuple<Ball, Ball> TempTuple = Collisions.Ball_Ball(BallsList[a], BallsList[b]);
-                        BallsList[a] = TempTuple.Item1;
-                        BallsList[b] = TempTuple.Item2;
-                    }
-                    BallsList = Collisions.Ball_Pocket(BallsList[a], PocketList, BallsList, a, BlankCircle, Graveyard, ScreenWidth);
 
-                    if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
-                    {
-                        BallsList[a] = Debug.PingBall(BallsList[a]);
-                        PoolCue = Updates.UpdatePoolCue(PoolCue, Input.mousePosition, BallsList[BallsList.Count - 1].Center);
-                        if (Debug.sightStatus)
-                        {
-                            SightLine = Updates.UpdateSightLine(SightLine, Input.mousePosition, BallsList[BallsList.Count - 1].Center, PoolCue);
-                        }
-                    }
-                    else
-                    {
-                        //PoolCue.End = PoolCue.Start;
-                        //SightLine.End = SightLine.Start;
-                    }
-
-                }
-                */
                 for (int a = 0; a < BallsList.Count; a++)
                 {
                     Ball ballA = BallsList[a];
@@ -319,15 +274,20 @@ namespace MonoGamePool1
                         if (a == b) continue;
 
                         bool collided;
-                        //Tuple<Ball, Ball> temp = Collisions.Ball_Ball_New(ballA, ballB, Physics.coefficient_of_restitution_ball);
                         Tuple<Ball, Ball> temp = Collisions.Ball_Ball(ballA, ballB, out collided);
                         BallsList[a] = temp.Item1;
                         BallsList[b] = temp.Item2;
                     }
-                    bool pottedStat = Collisions.Ball_Pocket(BallsList[a], PocketList, ref BallsList, a, BlankCircle, Graveyard, ScreenWidth, ref PlacingCueBall);
+                    Collisions.Ball_Pocket(BallsList[a], PocketList, ref BallsList, a, BlankCircle, Graveyard, ScreenWidth, ref PlacingCueBall);
 
                     if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
                     {
+                        if (GamePlay.InTurn)
+                        {
+                            GamePlay.EndTurn(ref Players, ref CurrentPlayer, ref BallsList);
+                            GamePlay.InTurn = false;
+                        }
+
                         Ball cueBall = BallsList[BallsList.Count() - 1];
                         if (!PlacingCueBall)
                         {
@@ -347,14 +307,8 @@ namespace MonoGamePool1
                             GamePlay.PlaceCueBall(ref cueBall, Input.mousePosition, ref PlacingCueBall);
                         }
                     }
-                    if (pottedStat)
-                    {
-                        GamePlay.Potted(ref Players, CurrentPlayer, BallsList[a], ref EndGame);
-                    }
-                    Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
                 }
 
-                //Updates.UpdateCurrentPlayer(ref CurrentPlayer, Players);
                 if (BallsList.Count + Graveyard.Count > 15)
                 {
                     Ball ball = BallsList[BallsList.Count - 1];
@@ -421,13 +375,12 @@ namespace MonoGamePool1
 
             if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
             {
-                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.LinePos);               
+                TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.Chars.GetLength());               
             }
             if (NameBox.Pressed && NameBox.Timer < TextBox.BlinkTimer / 2)
             {
                 NameBox.DrawBlinkingKeyLine(spriteBatch, NameBox.Chars.GetLength());                
             }
-            //Graphics.DrawCushionDiagonals(spriteBatch, DiagonalLines, BlankBox);
             if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0 && !PlacingCueBall && !EndGame)
             {
                 PoolCue.Draw(spriteBatch);
@@ -442,7 +395,7 @@ namespace MonoGamePool1
             for (int x = 0; x < Players.Count; x++)
             {
                 Vector2 origin = new Vector2(50, 570 + 40 * x);
-                spriteBatch.DrawString(TextBoxFont, Players[x].Name, origin, Color.Black);
+                spriteBatch.DrawString(TextBoxFont, Players[x].Name, origin, Players[x].Colour);
             }
             if (!EndGame)
             {
@@ -466,21 +419,6 @@ namespace MonoGamePool1
             spriteBatch.End();
             base.Draw(gameTime);
 
-            //1046 x 548
-            //ForestGreen and SaddleBrown
-            //Draw outer pockets (silver lining?)
         }
     }
 }
-
-//Passwords entered (relational database and hashing)
-
-//File path for saving to file as constant
-//Use folders for days? - File selection for time in days
-
-//Add trig again
-//SORT COLLISIONS
-
-//MVC (Model-Controller-View)
-
-//Try excepts around line drawing / file checking

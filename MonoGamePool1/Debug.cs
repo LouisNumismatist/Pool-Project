@@ -66,6 +66,8 @@ namespace MonoGamePool1
 
                             Game1.HittingCueBall = false;
                             //Ball let go of
+
+                            Updates.UpdateCurrentPlayer(ref Game1.CurrentPlayer, Game1.Players);
                         }
                     }
                 }
@@ -81,34 +83,6 @@ namespace MonoGamePool1
                 spriteBatch.DrawString(Game1.font, text, new Vector2(Input.mousePosition.X + 15, Input.mousePosition.Y + 10), Color.Black, 0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
             }
         }
-
-        /*public static Tuple<Color, string> ChangeTextures()
-        {
-            if (color == "green" || color == "mario")
-            {
-                return new Tuple<Color, string>(Color.SaddleBrown, "Green Felt");
-            }
-            else if (color == "blue")
-            {
-                return new Tuple<Color, string>(Color.DimGray, "Blue Felt");
-            }
-            else
-            {
-                return new Tuple<Color, string>(Color.DimGray, "KERMIE_Saturated_Gradient");
-            }
-        }*/
-
-        /*public static bool BlackEight()
-        {
-            if (color == "green" || color == "blue")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }*/
 
         public static void DrawBoundingBoxes(SpriteBatch spriteBatch, List<Ball> ballsList, Texture2D texture)
         {

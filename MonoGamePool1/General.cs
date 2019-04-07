@@ -33,25 +33,6 @@ namespace MonoGamePool1
             }
         }
 
-        /*public static bool InsideGameSpace(Vector2 Coord, int ScreenWidth, int ScreenHeight)
-        {
-            return MouseWithinArea(Coord, Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight));
-            if (Coord.X >= 0 && Coord.X <= ScreenWidth && Coord.Y >= 0 && Coord.Y <= ScreenHeight)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }*/
-
-        /*public static void EndGame()
-        {
-
-        }
-        //x = 10 - y^3*/
-
         public static bool NoBallsMoving(List<Ball> BallsList)
         {
             bool status = true;
@@ -66,19 +47,21 @@ namespace MonoGamePool1
             return status;
         }
 
+        public static float ToRotation(this Vector2 vector)
+        {
+            return (float)Math.Atan2(vector.Y, vector.X);
+        }
 
+        public static Vector2 ToVector2(this float radian)
+        {
+            return new Vector2((float)Math.Cos(radian), (float)Math.Sin(radian));
+        }
 
         public static bool InAlpha(string letter)
         {
             List<char> Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
-            if (Alphabet.Contains(Convert.ToChar(letter)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            return Alphabet.Contains(Convert.ToChar(letter));
         }
 
         public static decimal ToExponential(string item)
@@ -89,16 +72,6 @@ namespace MonoGamePool1
             decimal number = Convert.ToDecimal(mant[0]);
             number *= (decimal)Math.Pow(10, Convert.ToDouble(mant[1]));
             return number;
-        }
-
-        public static void IncPlayer(ref Player player)
-        {
-            player.Shots += 1;
-        }
-
-        public static void NullPlayer(ref Player player)
-        {
-            player.Shots = 0;
         }
 
         public static float RealDist(int pixels)

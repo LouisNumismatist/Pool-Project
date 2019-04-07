@@ -93,15 +93,8 @@ namespace MonoGamePool1
 
         public static bool MouseWithinArea(Vector2 TopLeft, Vector2 LowRight)
         {
-            if (mousePosition.X >= TopLeft.X && mousePosition.X <= LowRight.X &&
-                mousePosition.Y >= TopLeft.Y && mousePosition.Y <= LowRight.Y)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (mousePosition.X >= TopLeft.X && mousePosition.X <= LowRight.X &&
+                    mousePosition.Y >= TopLeft.Y && mousePosition.Y <= LowRight.Y);
         }
     }
 }

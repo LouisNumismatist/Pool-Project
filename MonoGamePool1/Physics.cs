@@ -55,32 +55,6 @@ namespace MonoGamePool1
             return ((y - c) / m);
         }
 
-        /*public static double SUVATSelect(string miss, string find, float aa, float bb, float cc)
-        {
-            float s;
-            float u;
-            float v;
-            float a;
-            float t;
-
-            if (find == "s")
-            {
-                if (miss == "u")
-                {
-                    v = aa;
-                    a = bb;
-                    t = cc;
-                    return (v * t - 0.5 * a * Math.Pow(t, 2));
-                }
-            }
-        }*/
-
-        public static double Impulse()
-        {
-            return 0;
-            //return Impulse;
-        }
-
         public static bool CircleLine(Ball Circle, Vector2 LinePos)
         {
             if (Vector2.Distance(Circle.Center, LinePos) <= Circle.Radius)
