@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace MonoGamePool1
 {
     /// <summary>
-    /// Player class used for player data and validation of names (and passwords / highscores later?)
+    /// Player class used for player data and validation of usernames
     /// </summary>
     public class Player
     {
@@ -46,6 +46,7 @@ namespace MonoGamePool1
             }
             return Valid;
         }
+
         public void SetName(string newName)
         {
             Name = newName;

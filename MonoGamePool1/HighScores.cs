@@ -20,14 +20,13 @@ namespace MonoGamePool1
         public HighScores()
         {
             InitializeComponent();
-            
+
         }
 
         private void HighScores_Load(object sender, EventArgs e)
         {
             HighScoresList = HighScoresSorting.GetHighScores();
             WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
-            //HighScoresList = HighScoresSorting.IdentifyCommand(0, true);
         }
 
         public void WriteLists(ref ListBox listBox1, ref ListBox listBox2, ref ListBox listBox3)
@@ -53,16 +52,6 @@ namespace MonoGamePool1
         {
 
         }
-
-        /*private void Button2_Click_1(object sender, EventArgs e)
-        {
-
-        }*/
-
-        /*private void Button2_Click_2(object sender, EventArgs e) //Username DESC
-        {
-
-        }*/
 
         private void FlowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
@@ -94,11 +83,9 @@ namespace MonoGamePool1
 
         }
 
-
         private void UsernameASC_Click(object sender, EventArgs e) //Username ASC
         {
-            //sort by the usernanme
-            //use OrderByDescending for descending
+            //Sort by the Username
             HighScoresList = Algorithms.MergeGeneric(HighScoresList, new HighScoreNameComparer()).ToList();
             WriteLists(ref UsernameBox, ref BallsPottedBox, ref TimeBox);
         }

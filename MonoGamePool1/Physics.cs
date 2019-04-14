@@ -8,7 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGamePool1
 {
-    public static class Physics
+    /// <summary>
+    /// Class for the equations to be used in collisions and general physics related areas
+    /// </summary>
+    public class Physics
     {
         public const float coefficient_of_friction_ball = 0.08f; //0.03-0.08  - FRICTION IN COLLISION
         public const float coefficient_sliding_friction_cloth = 0.4f; //0.15-0.4 - IGNORE: FOR SPIN
@@ -35,36 +38,9 @@ namespace MonoGamePool1
             return Math.Sqrt(Math.Pow(hyp, 2) - Math.Pow(adj, 2));
         }
 
-        public static float Gradient(Vector2 a, Vector2 b)
+        public static bool CircleLine(Circle Circle, Vector2 LinePos)
         {
-            return ((b.Y - a.Y) / (b.X - a.X));
-        }
-
-        public static float YIntercept(Vector2 a, float Gradient)
-        {
-            return (a.Y - (a.X * Gradient));
-        }
-
-        public static float LineEquation(float x, float m, float c)
-        {
-            return (m * x + c);
-        }
-
-        public static float FindX(float y, float m, float c)
-        {
-            return ((y - c) / m);
-        }
-
-        public static bool CircleLine(Ball Circle, Vector2 LinePos)
-        {
-            if (Vector2.Distance(Circle.Center, LinePos) <= Circle.Radius)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (Vector2.Distance(Circle.Center, LinePos) <= Circle.Radius);
         }
 
         public static int CountTotal(int i)
@@ -75,21 +51,6 @@ namespace MonoGamePool1
                 total += j;
             }
             return total;
-        }
-
-        public static double SinAngle(Vector2 opp, Vector2 hyp)
-        {
-            return Math.Asin((double)Gradient(hyp, opp));
-        }
-
-        public static double CosAngle(Vector2 hyp, Vector2 adj)
-        {
-            return Math.Acos((double)Gradient(adj, hyp));
-        }
-
-        public static double TanAngle(Vector2 adj, Vector2 opp)
-        {
-            return Math.Atan((double)Gradient(opp, adj));
         }
 
         public static double Friction(float F, float Coefficient)
@@ -137,6 +98,60 @@ namespace MonoGamePool1
             return (1 / length) * vector;
         }
 
+    }
+
+    /// <summary>
+    /// Physics specifically about linear lines with the form y=mx+c
+    /// </summary>
+    public class LinearLines : Physics
+    {
+        public static float Gradient(Vector2 a, Vector2 b)
+        {
+            return ((b.Y - a.Y) / (b.X - a.X));
+        }
+
+        public static float YIntercept(Vector2 a, float Gradient)
+        {
+            return (a.Y - (a.X * Gradient));
+        }
+
+        public static float LineEquation(float x, float m, float c)
+        {
+            return (m * x + c);
+        }
+
+        public static float FindX(float y, float m, float c)
+        {
+            return ((y - c) / m);
+        }
+    }
+
+    /// <summary>
+    /// Physics specifically relating to trigonometry
+    /// </summary>
+    public class Trig : LinearLines
+    {
+        public static double SinAngle(Vector2 opp, Vector2 hyp)
+        {
+            return Math.Asin(Gradient(hyp, opp));
+        }
+
+        public static double CosAngle(Vector2 hyp, Vector2 adj)
+        {
+            return Math.Acos(Gradient(adj, hyp));
+        }
+
+        public static double TanAngle(Vector2 adj, Vector2 opp)
+        {
+            return Math.Atan(Gradient(opp, adj));
+        }
+    }
+
+    /// <summary>
+    /// Physics specifically relating to Circular Motion, a topic in A-Level Physics
+    /// </summary>
+    public class CircularMotion : Physics
+    {
         //Circular Motion Equations
 
         public static float SphereCircumference(float radius)

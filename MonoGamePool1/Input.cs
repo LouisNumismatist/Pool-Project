@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Class to deal with user input
+    /// </summary>
     public static class Input
     {
         private static MouseState currentMouseState;

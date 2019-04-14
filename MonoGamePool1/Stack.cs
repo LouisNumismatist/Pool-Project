@@ -8,7 +8,7 @@ namespace MonoGamePool1
 {
     /// <summary>
     /// My own implementation of a stack data structure, mainly used for textboxes,
-    /// however as a generic it could be used for other variable types than strings
+    /// however as it is generic it could be used for other variable types than strings
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Stack<T>

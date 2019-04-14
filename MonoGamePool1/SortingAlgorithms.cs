@@ -7,25 +7,21 @@ using System.Threading.Tasks;
 namespace MonoGamePool1
 {
     /// <summary>
-    /// A class for algorithms
+    /// A class for algorithms which sort lists of data
     /// </summary>
     public class Algorithms
     {
-
-
         public static T[] MergeGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //minor
         {
             return MergeMainGeneric(arr, comparer, 0, arr.Count() - 1);
         }
-
 
         public static T[] QuickGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //minor
         {
             return QuickMainGeneric(arr, comparer, 0, arr.Count() - 1);
         }
 
-
-        private static T[] MergeMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int left, int right) //DONE
+        private static T[] MergeMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int left, int right) //major
         {
             T[] array = arr.ToArray();
 
@@ -70,14 +66,11 @@ namespace MonoGamePool1
             return array;
         }
 
-
-
-        private static T[] QuickMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int OuterLeft, int OuterRight) //DONE
+        private static T[] QuickMainGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer, int outerLeft, int outerRight) //major
         {
             T[] array = arr.ToArray();
-            //var array = arr.ToArray();
-            int left = OuterLeft;
-            int right = OuterRight;
+            int left = outerLeft;
+            int right = outerRight;
             int pivot = left;
 
             int comp = comparer.Compare(array[pivot], array[right]);
@@ -121,20 +114,19 @@ namespace MonoGamePool1
                     }
                 }
             }
-            if (right > OuterLeft)
+            if (right > outerLeft)
             {
-                array = QuickMainGeneric(array, comparer, OuterLeft, right - 1);
+                array = QuickMainGeneric(array, comparer, outerLeft, right - 1);
             }
-            if (right + 1 < OuterRight)
+            if (right + 1 < outerRight)
             {
-                array = QuickMainGeneric(array, comparer, right + 1, OuterRight);
+                array = QuickMainGeneric(array, comparer, right + 1, outerRight);
             }
 
             return array;
         }
 
-
-        public static T[] BubbleGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer)
+        public static T[] BubbleGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //major
         {
             T[] array = arr.ToArray();
 
@@ -153,11 +145,9 @@ namespace MonoGamePool1
             return array;
         }
 
-
-        public static T[] CocktailShakerGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //DONE
+        public static T[] CocktailShakerGeneric<T>(IEnumerable<T> arr, IComparer<T> comparer) //major
         {
             T[] array = arr.ToArray();
-            //var array = arr.ToArray();
 
             int left = 0;
             int right = array.Count() - 1;
@@ -166,6 +156,7 @@ namespace MonoGamePool1
 
             while (left < right)
             {
+                //Left to right sorting
                 for (int x = left; x < right; x++)
                 {
                     comp = comparer.Compare(array[x], array[x + 1]);
@@ -181,6 +172,7 @@ namespace MonoGamePool1
                 {
                     break;
                 }
+                //Right to left sorting
                 for (int x = right; x >= left; x--)
                 {
                     comp = comparer.Compare(array[x], array[x - 1]);
@@ -195,6 +187,5 @@ namespace MonoGamePool1
             }
             return array;
         }
-
     }
 }

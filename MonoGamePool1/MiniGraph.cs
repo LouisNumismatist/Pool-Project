@@ -45,9 +45,12 @@ namespace MonoGamePool1
             spriteBatch.Draw(Texture, new Rectangle((int)(Origin.X + 0.25 * Dimensions.X), (int)Origin.Y, 1, (int)Dimensions.Y), Color.White); //y-axis
             spriteBatch.Draw(Texture, new Rectangle((int)(Origin.X), (int)(Origin.Y + Dimensions.Y - 5), (int)(Dimensions.X), 1), Color.White); //x-axis
             spriteBatch.DrawString(Game1.TextBoxFont, ((int)(Max + 0.5f)).ToString(), new Vector2(Origin.X, Origin.Y - (LetterHeight + 2)), Color.White);
+            //Draws text and numbers
             spriteBatch.DrawString(Game1.TextBoxFont, "0", new Vector2(Origin.X, Origin.Y + Dimensions.Y + 2), Color.White);
             spriteBatch.DrawString(Game1.TextBoxFont, Label, new Vector2(Origin.X + 2 * LetterWidth, Origin.Y + Dimensions.Y + 2), Color.White, 0, Vector2.Zero, 0.8f, SpriteEffects.None, 0);
+
             float[] items = Values.GetContents();
+            //Draws points
             for (int x = 0; x < Values.GetTail(); x++)
             {
                 spriteBatch.Draw(Texture, new Rectangle((int)Origin.X + x, (int)(((Origin.Y + Dimensions.Y) - (items[x] / Max) * Dimensions.Y)), 1, 1), Color.Red);

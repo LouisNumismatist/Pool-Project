@@ -43,7 +43,6 @@ namespace MonoGamePool1
         public List<Pocket> OuterPockets = new List<Pocket>();
         public List<Ball> Graveyard = new List<Ball>();
         public List<Ball> RecentlyPotted = new List<Ball>();
-        public List<Button> ButtonList = new List<Button>();
         public static Color FirstTapped = Color.White;
 
         public static DiagonalLine PoolCue;
@@ -128,6 +127,8 @@ namespace MonoGamePool1
             Players.Add(new Player(1, Player1Name));
             Players.Add(new Player(2, Player2Name));
 
+
+            //Speaking instructional information on startup
             System.Speech.Synthesis.SpeechSynthesizer speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
 
             speechSynthesizer.SpeakAsync("Welcome to eight ball pool. Please enter your names in the text box below");
@@ -173,7 +174,7 @@ namespace MonoGamePool1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            if (!EndGame)
+            if (!EndGame) //No updates after the game has ended
             {
                 SaveButton.Update(Input.mousePosition);
                 LoadButton.Update(Input.mousePosition);
@@ -184,7 +185,7 @@ namespace MonoGamePool1
                 HelpButton.Update(Input.mousePosition);
                 RowsBox.Update();
 
-                TypeBox.UpdatePressed();
+                TypeBox.UpdatePressed(); //Update textboxes
                 if (TypeBox.Pressed)
                 {
                     NameBox.Pressed = false;
@@ -230,7 +231,7 @@ namespace MonoGamePool1
                 }
 
                 string CompUsername = Environment.UserName;
-                if (SaveButton.Pressed && Input.LeftMouseJustClicked())
+                if (SaveButton.Pressed && Input.LeftMouseJustClicked()) //Update buttons
                 {
                     string path = @"C:\Users\" + CompUsername + @"\source\repos\MonoGamePool1\MonoGamePool1\SaveFiles\";
                     GameStatus.SaveGame(BallsList, path);
@@ -255,7 +256,7 @@ namespace MonoGamePool1
                 }
                 if (DebugButton.Pressed && Input.LeftMouseJustClicked())
                 {
-                    GameStatus.DebugGame();
+                    Debug.DebugGame();
                 }
                 if (HelpButton.Pressed && Input.LeftMouseJustClicked())
                 {
@@ -263,7 +264,7 @@ namespace MonoGamePool1
                     Process.Start(info);
                 }
 
-                for (int a = 0; a < BallsList.Count; a++)
+                for (int a = 0; a < BallsList.Count; a++) //Updating balls
                 {
                     Ball ballA = BallsList[a];
                     ballA.Update();
@@ -278,9 +279,9 @@ namespace MonoGamePool1
                         BallsList[a] = temp.Item1;
                         BallsList[b] = temp.Item2;
                     }
-                    Collisions.Ball_Pocket(BallsList[a], PocketList, ref BallsList, a, BlankCircle, Graveyard, ScreenWidth, ref PlacingCueBall);
+                    Collisions.Ball_Pocket(BallsList[a], PocketList, ref BallsList, a, BlankCircle, Graveyard, ScreenWidth, ref PlacingCueBall, ref EndGame);
 
-                    if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0)
+                    if (General.NoBallsMoving(BallsList) && GameStatus.Velocities.Count == 0) //Check if the turn has ended
                     {
                         if (GamePlay.InTurn)
                         {
@@ -309,13 +310,13 @@ namespace MonoGamePool1
                     }
                 }
 
-                if (BallsList.Count + Graveyard.Count > 15)
+                if (BallsList.Count + Graveyard.Count > 15) //Update graphs
                 {
                     Ball ball = BallsList[BallsList.Count - 1];
                     SpeedTimeGraph.Update((float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y));
                     DisplacementTimeGraph.Update(Vector2.Distance(DisplacementMarker, ball.Center));
                     EkTimeGraph.Update((float)Physics.KineticEnergy(ball.Mass, (float)Physics.Pythagoras1(ball.Velocity.X, ball.Velocity.Y)));
-                    CentripetalForceGraph.Update(Physics.CentripetalForce(ball.Velocity, ball.Radius, ball.Mass));
+                    CentripetalForceGraph.Update(CircularMotion.CentripetalForce(ball.Velocity, ball.Radius, ball.Mass));
                 }
             }
             base.Update(gameTime);
@@ -333,19 +334,27 @@ namespace MonoGamePool1
 
             Stopwatch watch = new Stopwatch(); //Create watch and start it
             watch.Start();
-            Graphics.DrawPockets(spriteBatch, OuterPockets);
+            Graphics.DrawPockets(spriteBatch, OuterPockets); //Draw main Pool Table
             Graphics.DrawBoard(spriteBatch);
             Graphics.DrawPockets(spriteBatch, PocketList);
 
-            if (PlacingCueBall)
+            if (PlacingCueBall) //Line for when the cue ball is being placed
             {
                 spriteBatch.Draw(BlankBox, new Rectangle(274, BorderWidth, 1, ScreenHeight - 2 * BorderWidth), Color.LightGray);
             }
 
-            Graphics.DrawBalls(spriteBatch, BallsList);
+            Graphics.DrawBalls(spriteBatch, BallsList); //Draw balls on table to screen
+            if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0 && !PlacingCueBall && !EndGame)
+            {
+                PoolCue.Draw(spriteBatch);
+                if (Debug.sightStatus) //Draws Sight Line to screen if active
+                {
+                    SightLine.Draw(spriteBatch);
+                }
+            }
             Graphics.DrawScoreBox(spriteBatch, Graveyard);
 
-            SaveButton.Draw(spriteBatch);
+            SaveButton.Draw(spriteBatch); //Draws all the buttons to screen
             LoadButton.Draw(spriteBatch);
             HighScoresButton.Draw(spriteBatch);
             ResetButton.Draw(spriteBatch);
@@ -368,12 +377,12 @@ namespace MonoGamePool1
             RowsBox.Draw(spriteBatch);
             spriteBatch.DrawString(RowsBox.Font, "Rows", new Vector2(RowsBox.Origin.X + RowsBox.Dimensions.X + 15, RowsBox.Origin.Y), Color.Black);
 
-            SpeedTimeGraph.Draw(spriteBatch);
+            SpeedTimeGraph.Draw(spriteBatch); //Draws MiniGraphs to screen
             DisplacementTimeGraph.Draw(spriteBatch);
             EkTimeGraph.Draw(spriteBatch);
             CentripetalForceGraph.Draw(spriteBatch);
 
-            if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2)
+            if (TypeBox.Pressed && TypeBox.Timer < TextBox.BlinkTimer / 2) //Draws blinking line on textboxes if active and appropriate
             {
                 TypeBox.DrawBlinkingKeyLine(spriteBatch, TypeBox.Chars.GetLength());               
             }
@@ -381,15 +390,8 @@ namespace MonoGamePool1
             {
                 NameBox.DrawBlinkingKeyLine(spriteBatch, NameBox.Chars.GetLength());                
             }
-            if (General.NoBallsMoving(BallsList) && Input.MouseWithinArea(Vector2.Zero, new Vector2(ScreenWidth, ScreenHeight)) && GameStatus.Velocities.Count == 0 && !PlacingCueBall && !EndGame)
-            {
-                PoolCue.Draw(spriteBatch);
-                if (Debug.sightStatus)
-                {
-                    SightLine.Draw(spriteBatch);
-                }
-            }
-            Debug.ShowCoords(spriteBatch);
+            
+            Debug.ShowCoords(spriteBatch); //Debug information
             Debug.DrawBoundingBoxes(spriteBatch, BallsList, BlankBox);
 
             for (int x = 0; x < Players.Count; x++)
@@ -397,12 +399,12 @@ namespace MonoGamePool1
                 Vector2 origin = new Vector2(50, 570 + 40 * x);
                 spriteBatch.DrawString(TextBoxFont, Players[x].Name, origin, Players[x].Colour);
             }
-            if (!EndGame)
+            if (!EndGame) //Player turn text
             {
                 spriteBatch.DrawString(TextBoxFont, Players[CurrentPlayer].Name + "'s turn", new Vector2(ScreenWidth * 0.43f, ScreenHeight + 3), Players[CurrentPlayer].Colour);
                 spriteBatch.DrawString(TextBoxFont, Players[CurrentPlayer].Shots + " shots remaining", new Vector2(ScreenWidth * 0.2f, ScreenHeight + 3), Players[CurrentPlayer].Colour);
             }
-            else
+            else //Endgame text
             {
                 spriteBatch.DrawString(TextBoxFont, "GAME OVER", new Vector2(ScreenWidth * 0.43f, ScreenHeight + 3), Color.Black);
             }
@@ -411,7 +413,7 @@ namespace MonoGamePool1
             watch.Stop();
 
             //Draw the amount of milliseconds it takes to draw everything else (16.66... ms or less is 60fps)
-            if (Debug.speedTest && !EndGame)
+            if (Debug.speedTest && !EndGame) //Debug information
             {
                 spriteBatch.DrawString(font, watch.Elapsed.TotalMilliseconds.ToString("N3") + "ms", new Vector2(72, 11), Color.White);
             }

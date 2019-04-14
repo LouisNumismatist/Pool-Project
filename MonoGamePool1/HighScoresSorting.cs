@@ -45,23 +45,19 @@ namespace MonoGamePool1
         public int BallsPotted;
         public string Time;
 
-        public HighScore(string username, int ballspotted, string time)
+        public HighScore(string username, int ballsPotted, string time)
         {
             UserName = username;
-            BallsPotted = ballspotted;
+            BallsPotted = ballsPotted;
             Time = time;
         }
     }
 
-    public class HighScoresSorting
+    public class HighScoresSorting : HighScores
     {
-        public static int lastSort = 0;
-        public static bool asc = true;
-
         public static List<HighScore> GetHighScores()
-        {
-            List<HighScore> HighScoresList = new List<HighScore>();
-            try
+        {            
+            try //Doesn't stop program if save file cannot be found
             {
                 string path = @"C:\Users\Louis\source\repos\MonoGamePool1\MonoGamePool1\FullHighScores.txt";
                 string[] items = File.ReadAllLines(path);
@@ -79,7 +75,7 @@ namespace MonoGamePool1
             return HighScoresList;
         }
 
-        public static void ReverseList(ref List<HighScore> HighScoresList)
+        public static void ReverseList()
         {
             if (HighScoresList.Count() > 0)
             {
@@ -95,41 +91,6 @@ namespace MonoGamePool1
                 }
                 HighScoresList = reversed;
             }
-        }
-
-        public static List<HighScore> IdentifyCommand(int type, bool direction, List<HighScore> HighScoresList)
-        {
-            if (!(type == lastSort && direction == asc)) //Same button not repeated
-            {
-                if (type == lastSort && direction != asc) //Reverse current sorted list
-                {
-                    ReverseList(ref HighScoresList);
-                }
-                else if (type != lastSort) //if new list to be sorted
-                {
-                    if (type == 0)
-                    {
-                        //Sort UserNames
-                    }
-                    else if (type == 1)
-                    {
-                        //Sort BallsPotted
-                    }
-                    else
-                    {
-                        //Sort TimeTaken
-                    }
-
-                    if (!asc)
-                    {
-                        ReverseList(ref HighScoresList);
-                    }
-                }
-            }
-            lastSort = type;
-            asc = direction;
-
-            return HighScoresList;
         }
     }
 }

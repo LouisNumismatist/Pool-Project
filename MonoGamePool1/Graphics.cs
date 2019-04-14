@@ -11,16 +11,12 @@ using Microsoft.Xna.Framework.Media;
 
 namespace MonoGamePool1
 {
-    public class Graphics
+    /// <summary>
+    /// Used for drawing collections of items to the screen in a specific way
+    /// </summary>
+    public class Graphics : Game1
     {
-        static readonly int BorderWidth = Game1.BorderWidth;
-        static readonly int ScreenHeight = Game1.ScreenHeight;
-        static readonly int ScreenWidth = Game1.ScreenWidth;
-        static readonly int BallDiam = Game1.BallDiam;
-
-        public static Texture2D BlankBox = Game1.BlankBox;
-        public static Texture2D PixelBox;
-        public static Texture2D BlankCircle = Game1.BlankCircle;
+        public static int ballBorderWidth = 2;
 
         public static void DrawBoard(SpriteBatch spriteBatch)
         {
@@ -38,9 +34,9 @@ namespace MonoGamePool1
             {
                 if (a.ID == 15)
                 {
-                    if (Game1.HittingCueBall && Debug.canPingBall)
+                    if (HittingCueBall && Debug.canPingBall)
                     {
-                        new Pocket(0, a.Center, a.Radius + Debug.ballBorderWidth, Color.Red).Draw(spriteBatch);
+                        new Pocket(0, a.Center, a.Radius + ballBorderWidth, Color.Red).Draw(spriteBatch);
                         //Draws red ball behind ball when held
                     }
                 }

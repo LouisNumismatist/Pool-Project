@@ -7,15 +7,18 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Class for any methods which are extensions of other classes or that are needed in many places
+    /// </summary>
     public static class General
     {
-        static void FlipX(ref Vector2 a)
+        public static void FlipX(ref Vector2 a)
         {
             Vector2 Flip = new Vector2(-1, 1);
             a = Vector2.Multiply(a, Flip);
         }
 
-        static void FlipY(ref Vector2 a)
+        public static void FlipY(ref Vector2 a)
         {
             Vector2 Flip = new Vector2(1, -1);
             a = Vector2.Multiply(a, Flip);
@@ -23,14 +26,7 @@ namespace MonoGamePool1
 
         public static bool SameSign(double a, double b)
         {
-            if ((a > 0) && (b > 0) || ((a < 0) && (b < 0)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return ((a > 0) && (b > 0)) || ((a < 0) && (b < 0));
         }
 
         public static bool NoBallsMoving(List<Ball> BallsList)
@@ -60,7 +56,6 @@ namespace MonoGamePool1
         public static bool InAlpha(string letter)
         {
             List<char> Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
-
             return Alphabet.Contains(Convert.ToChar(letter));
         }
 
@@ -76,6 +71,7 @@ namespace MonoGamePool1
 
         public static float RealDist(int pixels)
         {
+            //Converts from pixels to metres
             return pixels * 0.25f;
         }
     }

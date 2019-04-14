@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Class for methods which apply to playing the game
+    /// </summary>
     public static class GamePlay
     {
         public static Ball FirstBallHit;
@@ -83,7 +86,7 @@ namespace MonoGamePool1
 
             if (FirstBallHit == null)
             {
-                //we didn't hit a ball, foul
+                //didn't hit a ball, foul
                 Foul(ref Players, PlayerTurn);
                 doneFoul = true;
             }
@@ -118,7 +121,6 @@ namespace MonoGamePool1
                 if (BallsPotted.Count > 0)
                 {
                     current.Shots = 1;
-                    
                 }
             }
             if (current.Shots <= 0)
@@ -137,6 +139,7 @@ namespace MonoGamePool1
 
         public static void PlaceCueBall(ref Ball CueBall, Vector2 mousePosition, ref bool PlacingCueBall)
         {
+            //Placing the cue ball on the starting line
             if (mousePosition.Y > Game1.BorderWidth + CueBall.Radius && mousePosition.Y < Game1.ScreenHeight - Game1.BorderWidth - CueBall.Radius)
             {
                 CueBall.Center.Y = mousePosition.Y;

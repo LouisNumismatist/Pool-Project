@@ -83,7 +83,7 @@ namespace MonoGamePool1
             Velocity *= 1 - Physics.coefficient_of_rolling_resistance_cloth;
         }
 
-        public void Write()
+        public void Write() //For Debugging
         {
             Console.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", ID, Center, Radius, Velocity, Acceleration, Collision, PrevBall);
         }

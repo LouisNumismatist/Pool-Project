@@ -11,21 +11,20 @@ namespace MonoGamePool1
     /// <summary>
     /// Init Class is used to initialise any group of objects that cannot be initialised using their object constructors alone
     /// </summary>
-    public static class Init
+    public class Init : Game1
     {
-        static readonly int BorderWidth = Game1.BorderWidth;
-        static readonly int ScreenHeight = Game1.ScreenHeight;
-        static readonly int ScreenWidth = Game1.ScreenWidth;
-        static readonly int BallDiam = Game1.BallDiam;
         static readonly int BallRad = BallDiam / 2;
+
         public static void InitialiseBalls(ref List<Ball> BallsList, Texture2D texture)
         {
+            //Number of each type of board on the table
             int Red = (Physics.CountTotal(Debug.rows) - 1) / 2;
             int Yel = (Physics.CountTotal(Debug.rows) - 1) / 2;
             int ID = -1;
             Color color;
-
+            //Position of the cue ball on the screen
             Vector2 CuePos = new Vector2((ScreenWidth - 2 * BorderWidth) / 4 + BorderWidth, ScreenHeight / 2);
+            //Position of the 8 ball on the screen
             Vector2 EightPos = new Vector2((ScreenWidth - 2 * BorderWidth) / 4 * 3 + BorderWidth, ScreenHeight / 2);
 
             Random random = new Random();
@@ -33,6 +32,7 @@ namespace MonoGamePool1
             {
                 for (int j = 0; j < Debug.rows - i; j++)
                 {
+                    //Places the balls on the screen in diagonal lines of length dependant on the rows allowed by the user
                     Vector2 position = new Vector2(EightPos.X + (i - 1) * (BallDiam - 2) + (j - 1) * (BallDiam - 2), EightPos.Y + (-BallRad - 1) * j + i * (BallRad + 1));
                     if (i == 1 && j == 1)
                     {
@@ -56,17 +56,19 @@ namespace MonoGamePool1
                     {
                         ID += 1;
                     }
-                    BallsList.Add(new Ball(ID, position, 11, Vector2.Zero, Vector2.Zero, color, false, ID));
+                    BallsList.Add(new Ball(ID, position, BallRad, Vector2.Zero, Vector2.Zero, color, false, ID));
                 }
             }
-            BallsList.Add(new Ball(5, EightPos, 11, Vector2.Zero, Vector2.Zero, Color.Black, false, 5));
-            BallsList.Add(new Ball(7, EightPos, 11, Vector2.Zero, Vector2.Zero, Color.Black, false, 5));
-            BallsList.Add(new Ball(15, CuePos, 11, Vector2.Zero, new Vector2(-0.008f, -0.008f), Color.White, false, 15));
+            //Non-Red/Yellow balls
+            BallsList.Add(new Ball(5, EightPos, BallRad, Vector2.Zero, Vector2.Zero, Color.Black, false, 5));
+            BallsList.Add(new Ball(7, EightPos, BallRad, Vector2.Zero, Vector2.Zero, Color.Black, false, 5));
+            BallsList.Add(new Ball(15, CuePos, BallRad - 1, Vector2.Zero, new Vector2(-0.008f, -0.008f), Color.White, false, 15));
 
         }
 
         public static void InitialisePockets(ref List<Pocket> PocketList, int radius, Color colour)
         {
+            //Creates list of pockets
             int ID = -1;
             for (int i = 0; i < 2; i++)
             {

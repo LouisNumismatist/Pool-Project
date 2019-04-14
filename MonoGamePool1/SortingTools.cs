@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Helper class for the list sorting classes
+    /// </summary>
     public class SortingTools
     {
         public static IEnumerable<int> GenerateRandomNums(int n)
@@ -35,19 +38,6 @@ namespace MonoGamePool1
                 printedList += x + " ";
             }
             Console.WriteLine(printedList);
-        }
-
-        public static List<int> Digits(int n, int max)
-        {
-            List<int> digits = new List<int>();
-            int temp = 0;
-            for (int pow = max; pow >= 0; pow--)
-            {
-                int item = (int)(n / Math.Pow(10, pow)) - (temp * 10);
-                digits.Add(item);
-                temp = item;
-            }
-            return digits;
         }
 
         public static bool IsSorted(IEnumerable<int> arr)

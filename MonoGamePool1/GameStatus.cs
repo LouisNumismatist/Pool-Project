@@ -10,6 +10,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Class for functions which alter the state of the board
+    /// Mainly used for functions which buttons do
+    /// </summary>
     public class GameStatus
     {
         public static List<Vector2> Velocities = new List<Vector2>();
@@ -73,12 +77,5 @@ namespace MonoGamePool1
             return a;
         }
 
-        public static void DebugGame()
-        {
-            Debug.visualCoords = !Debug.visualCoords;
-            Debug.showBallNumbers = !Debug.showBallNumbers;
-            Debug.speedTest = !Debug.speedTest;
-            Debug.BoundingBoxes = !Debug.BoundingBoxes;
-        }
     }
 }

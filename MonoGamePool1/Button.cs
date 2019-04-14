@@ -56,15 +56,15 @@ namespace MonoGamePool1
 
         public void Update(Vector2 MousePosition)
         {
-            int ClickSize = 1;
+            int clickSize = 1;
             if (Input.MouseWithinArea(Origin, new Vector2(Origin.X + Dimensions.X, Origin.Y + Dimensions.Y)) && !Pressed && Input.LeftMouseJustClicked())
             {
-                Origin = Origin + new Vector2(ClickSize);
+                Origin = Origin + new Vector2(clickSize);
                 Pressed = true;
             }
             if (Pressed && Input.LeftMouseJustReleased())
             {
-                Origin = Origin - new Vector2(ClickSize);
+                Origin = Origin - new Vector2(clickSize);
                 Pressed = false;
             }
         }
@@ -93,15 +93,15 @@ namespace MonoGamePool1
 
         public void Update()
         {
-            bool LeftState = Left.Pressed;
-            bool RightState = Right.Pressed;
+            bool leftState = Left.Pressed;
+            bool rightState = Right.Pressed;
             Left.Update(Input.mousePosition);
             Right.Update(Input.mousePosition);
-            if (LeftState == true && Left.Pressed == false && Debug.rows > 1)
+            if (leftState == true && Left.Pressed == false && Debug.rows > 1)
             {
                 Debug.rows -= 1;
             }
-            else if (RightState == true && Right.Pressed == false && Debug.rows < Max)
+            else if (rightState == true && Right.Pressed == false && Debug.rows < Max)
             {
                 Debug.rows += 1;
             }
@@ -154,6 +154,7 @@ namespace MonoGamePool1
 
         public void Update()
         {
+            //Changes the state of the SwitchBox from on to off or vice versa
             On.Update(Input.mousePosition);
             Off.Update(Input.mousePosition);
             if ((On.Pressed && State == false) || (Off.Pressed && State == true))

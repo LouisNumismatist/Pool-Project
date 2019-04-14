@@ -10,10 +10,15 @@ using System.IO;
 
 namespace MonoGamePool1
 {
+    /// <summary>
+    /// Class used for data saving or retrieval from one or more files
+    /// Used for saving and retrieving the state of a game
+    /// </summary>
     public class FileSaving
     {
         public static void WriteToFile(string filePath, List<Ball> BallsList)
         {
+            //Writes text to a file
             List<string> TextList = new List<string> { };
             foreach (Ball a in BallsList)
             {
@@ -24,11 +29,13 @@ namespace MonoGamePool1
 
         public static string[] ReadFromFile(string filePath)
         {
+            //Gets text from file
             return File.ReadAllLines(filePath);
         }
 
         public static string ObjectToString(Ball a)
         {
+            //Converts a ball object into a string
             Dictionary<Color, string> Colours = new Dictionary<Color, string>()
             {
                 { Color.Red, "Red" },
@@ -42,6 +49,7 @@ namespace MonoGamePool1
 
         public static Ball StringToObject(string text)
         {
+            //Converts a string into a ball object
             Dictionary<string, Color> Colours = new Dictionary<string, Color>()
             {
                 { "Red", Color.Red },
@@ -62,6 +70,7 @@ namespace MonoGamePool1
 
         public static string CurrentMoment()
         {
+            //Turns the current moment to a string
             DateTime current = DateTime.Now;
             return (current.Year + "-" + current.Month + "-" + current.Day + "-" + current.Hour + "-" + current.Minute + "-" + current.Second);
         }

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGamePool1
 {
-    public static class Collisions
+    public class Collisions : Physics
     {
         public static Tuple<Ball, Ball> Ball_Ball(Ball a, Ball b, out bool collided)
         {
@@ -17,23 +17,24 @@ namespace MonoGamePool1
             {
                 collided = true;
 
-                Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign, Vector2: DISTANCE BETWEEN BALLS IN VECTOR2 FORM
-                float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse : DISTANCE BETWEEN BALLS AS FLOAT
+                Vector2 componentsDist = a.Center - b.Center; // Magnitude instead of distance() to keep sign
+                float dist = componentsDist.Length(); // Pythagoras of magnitude to find hypotenuse
 
                 float overlap = a.Radius + b.Radius - dist;
 
-                Vector2 minimumTranslationVector = componentsDist * (overlap / dist);
+                Vector2 minimumTranslationVector = componentsDist * (overlap / dist); //Find overlap between balls
 
-                float totalMass = (1 / a.Mass) + (1 / b.Mass); // (m2 + m1)/(m1*m2)
+                float totalMass = (1 / a.Mass) + (1 / b.Mass); // (m2 + m1)/(m1 * m2)
 
-                //based on proportion of total mass, move the balls apart more or less
+                //Based on proportion of total mass, move the balls apart more or less
                 a.Center += minimumTranslationVector * ((1 / a.Mass) / totalMass);
                 b.Center -= minimumTranslationVector * ((1 / b.Mass) / totalMass);
 
-                //calculate impact speed
+                //Calculate impact speed
                 Vector2 impactVelocity = a.Velocity - b.Velocity;
 
-                Vector2 vectorNormalised = Physics.UnitVector(componentsDist);
+                //Get vector of same direction but magnitude of one
+                Vector2 vectorNormalised = UnitVector(componentsDist);
 
                 float vn = Vector2.Dot(impactVelocity, vectorNormalised);
 
@@ -41,19 +42,25 @@ namespace MonoGamePool1
                 if (vn <= 0)
                 {
                     //calculate magnitude of the impulse
-                    float i = (-(1 - Physics.coefficient_of_restitution_ball) * vn) / totalMass;
+                    float i = (-(1 - coefficient_of_restitution_ball) * vn) / totalMass;
                     Vector2 impulse = componentsDist * i;
-
+                    //Changes velocities by impulse
                     a.Velocity += impulse / a.Mass;
                     b.Velocity -= impulse / b.Mass;
                 }
-                
             }
 
             if (collided && (a.ID == 15 || b.ID == 15) && GamePlay.FirstBallHit == null)
             {
-                if (a.ID == 15) GamePlay.FirstBallHit = b;
-                else GamePlay.FirstBallHit = a;
+                //changes gameplay information
+                if (a.ID == 15)
+                {
+                    GamePlay.FirstBallHit = b;
+                }
+                else
+                {
+                    GamePlay.FirstBallHit = a;
+                }
             }
 
             return new Tuple<Ball, Ball>(a, b);
@@ -61,13 +68,15 @@ namespace MonoGamePool1
 
         public static Ball Ball_Wall(Ball a, int BorderWidth, int ScreenWidth, int ScreenHeight)
         {
-            float Decrease = Physics.coefficient_of_restitution_rail;
+            float Decrease = coefficient_of_restitution_rail;
             float Increase = 1 - Decrease;
+            //Finds which type of collision has occured
             bool leftWallCollision = (a.Center.X - a.Radius <= BorderWidth && a.Velocity.X < 0);
             bool rightWallCollision = ((a.Center.X + a.Radius >= ScreenWidth - BorderWidth) && a.Velocity.X > 0);
             bool topWallCollision = (a.Center.Y - a.Radius <= BorderWidth && a.Velocity.Y < 0);
             bool bottomWallCollision = ((a.Center.Y + a.Radius >= ScreenHeight - BorderWidth) && a.Velocity.Y > 0);
 
+            //Collides with wall according to which wall was interacted with
             if (leftWallCollision || rightWallCollision)
             {
                 if (leftWallCollision)
@@ -98,12 +107,12 @@ namespace MonoGamePool1
             return a;
         }
 
-        public static bool Ball_Pocket(Ball a, List<Pocket> PocketList, ref List<Ball> BallsList, int index, Texture2D CueBall, List<Ball> Graveyard, int ScreenWidth, ref bool CueBallPlacing)
+        public static bool Ball_Pocket(Ball a, List<Pocket> PocketList, ref List<Ball> BallsList, int index, Texture2D CueBall, List<Ball> Graveyard, int ScreenWidth, ref bool CueBallPlacing, ref bool EndGame)
         {
             bool potted = false;
             foreach (Pocket p in PocketList)
             {
-                if (Vector2.Distance(a.Center, p.Center) <= PocketList[0].Radius)
+                if (Vector2.Distance(a.Center, p.Center) <= PocketList[0].Radius) //If the center of the ball is within the pocket space
                 {
                     potted = true;
                     //Cue Potted
@@ -121,6 +130,11 @@ namespace MonoGamePool1
                             GamePlay.BallsPotted.Add(a);
                             GamePlay.Potted(ref Game1.Players, Game1.CurrentPlayer, a, ref Game1.EndGame);
                         }
+                        //8 Ball potted
+                        else
+                        {
+                            EndGame = true;
+                        }
                         BallsList.Remove(a);
                     }
                 }
@@ -130,6 +144,10 @@ namespace MonoGamePool1
 
         public static bool BallsTouching(Vector2 a, Vector2 b, float Rad1, float Rad2, out float depth)
         {
+             /*
+             Checks if the balls are touching by checking if the distance between 
+             the center of the balls is less than the combined radiuses
+             */
             depth = 0;
             float distance = Vector2.Distance(a, b);
             if (distance <= (Rad1 + Rad2))
